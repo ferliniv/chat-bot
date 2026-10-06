@@ -1,0 +1,425 @@
+{
+  "totalMessages": 27,
+  "totalCommands": 14,
+  "coffeesPoured": 17,
+  "startedAt": 1790990018231,
+  "totalLikes": 10100,
+  "peakViewers": 0,
+  "currentViewers": {
+    "total": 0,
+    "tiktok": 0,
+    "youtube": 0,
+    "twitch": 0
+  },
+  "totalGifts": 10,
+  "totalGiftValue": 100,
+  "uniqueChatters": [
+    "vinicius",
+    "mod_master",
+    "viewerfiel",
+    "testervinicius",
+    "doadortop",
+    "testerslotsuser",
+    "brandnewuser",
+    "brandnewuser2"
+  ],
+  "recentEvents": [
+    {
+      "id": "evt-1791246451928-511",
+      "timestamp": 1791246451928,
+      "type": "gift_milestone",
+      "title": "🎁 Meta de 10 Presentes Atingida!",
+      "description": "🎉 META BATIDA: 10 PRESENTES! Chuva de Cafezinhos: +25 Cafezinhos para 2 espectadores ativos! 🎁☕",
+      "platform": "simulador"
+    },
+    {
+      "id": "evt-1791246451913-112",
+      "timestamp": 1791246451913,
+      "type": "gift",
+      "title": "🎁 Presente Recebido",
+      "description": "DoadorTop enviou Café Especial ☕ x10 (100 💎)",
+      "platform": "simulador"
+    },
+    {
+      "id": "evt-1791243558507-811",
+      "timestamp": 1791243558507,
+      "type": "like_milestone",
+      "title": "🔥 Marco de 10000 Likes Batido!",
+      "description": "🎉 META BATIDA: 10.000 LIKES! Chuva de Cafezinhos: +25 Cafezinhos para 2 espectadores ativos! ☕🔥",
+      "platform": "simulador"
+    },
+    {
+      "id": "evt-1791243550153-884",
+      "timestamp": 1791243550153,
+      "type": "duel",
+      "title": "⚔️ Duelo Finalizado",
+      "description": "@mod_master venceu @Vinicius valendo 30 Cafezinhos!",
+      "platform": "simulador"
+    },
+    {
+      "id": "evt-1791243541146-981",
+      "timestamp": 1791243541146,
+      "type": "minigame",
+      "title": "🔥 Derrota na Roleta",
+      "description": "@Vinicius apostou 10 e perdeu na roleta.",
+      "platform": "simulador"
+    },
+    {
+      "id": "evt-1791243533015-268",
+      "timestamp": 1791243533015,
+      "type": "coffee",
+      "title": "☕ Café Servido",
+      "description": "@Vinicius tomou um café (+10 Cafezinhos). Meta: 17/50",
+      "platform": "simulador"
+    }
+  ],
+  "historyTimeline": [
+    {
+      "time": "20:38",
+      "viewers": 0,
+      "likes": 0,
+      "messages": 14,
+      "timestamp": 1791243486662
+    },
+    {
+      "time": "20:40",
+      "viewers": 0,
+      "likes": 10000,
+      "messages": 20,
+      "timestamp": 1791243606665
+    },
+    {
+      "time": "20:42",
+      "viewers": 0,
+      "likes": 10000,
+      "messages": 20,
+      "timestamp": 1791243726669
+    },
+    {
+      "time": "20:44",
+      "viewers": 0,
+      "likes": 10000,
+      "messages": 20,
+      "timestamp": 1791243846679
+    },
+    {
+      "time": "20:46",
+      "viewers": 0,
+      "likes": 10000,
+      "messages": 20,
+      "timestamp": 1791243966680
+    },
+    {
+      "time": "20:48",
+      "viewers": 0,
+      "likes": 10000,
+      "messages": 21,
+      "timestamp": 1791244086696
+    },
+    {
+      "time": "20:50",
+      "viewers": 0,
+      "likes": 10100,
+      "messages": 21,
+      "timestamp": 1791244206707
+    },
+    {
+      "time": "20:52",
+      "viewers": 0,
+      "likes": 10100,
+      "messages": 21,
+      "timestamp": 1791244326707
+    },
+    {
+      "time": "20:54",
+      "viewers": 0,
+      "likes": 10100,
+      "messages": 21,
+      "timestamp": 1791244446718
+    },
+    {
+      "time": "20:56",
+      "viewers": 0,
+      "likes": 10100,
+      "messages": 21,
+      "timestamp": 1791244566731
+    },
+    {
+      "time": "20:58",
+      "viewers": 0,
+      "likes": 10100,
+      "messages": 21,
+      "timestamp": 1791244686736
+    },
+    {
+      "time": "21:00",
+      "viewers": 0,
+      "likes": 10100,
+      "messages": 21,
+      "timestamp": 1791244806748
+    },
+    {
+      "time": "21:02",
+      "viewers": 0,
+      "likes": 10100,
+      "messages": 21,
+      "timestamp": 1791244926760
+    },
+    {
+      "time": "21:04",
+      "viewers": 0,
+      "likes": 10100,
+      "messages": 21,
+      "timestamp": 1791245046769
+    },
+    {
+      "time": "21:06",
+      "viewers": 0,
+      "likes": 10100,
+      "messages": 21,
+      "timestamp": 1791245166783
+    },
+    {
+      "time": "21:08",
+      "viewers": 0,
+      "likes": 10100,
+      "messages": 21,
+      "timestamp": 1791245286790
+    },
+    {
+      "time": "21:10",
+      "viewers": 0,
+      "likes": 10100,
+      "messages": 21,
+      "timestamp": 1791245406798
+    },
+    {
+      "time": "21:12",
+      "viewers": 0,
+      "likes": 10100,
+      "messages": 21,
+      "timestamp": 1791245526805
+    },
+    {
+      "time": "21:14",
+      "viewers": 0,
+      "likes": 10100,
+      "messages": 21,
+      "timestamp": 1791245646815
+    },
+    {
+      "time": "21:16",
+      "viewers": 0,
+      "likes": 10100,
+      "messages": 21,
+      "timestamp": 1791245766824
+    },
+    {
+      "time": "21:18",
+      "viewers": 0,
+      "likes": 10100,
+      "messages": 21,
+      "timestamp": 1791245886834
+    },
+    {
+      "time": "21:20",
+      "viewers": 0,
+      "likes": 10100,
+      "messages": 21,
+      "timestamp": 1791246006836
+    },
+    {
+      "time": "21:22",
+      "viewers": 0,
+      "likes": 10100,
+      "messages": 21,
+      "timestamp": 1791246126838
+    },
+    {
+      "time": "21:24",
+      "viewers": 0,
+      "likes": 10100,
+      "messages": 21,
+      "timestamp": 1791246246845
+    },
+    {
+      "time": "21:26",
+      "viewers": 0,
+      "likes": 10100,
+      "messages": 21,
+      "timestamp": 1791246366852
+    },
+    {
+      "time": "21:27",
+      "viewers": 0,
+      "likes": 10100,
+      "messages": 21,
+      "timestamp": 1791246422511
+    },
+    {
+      "time": "21:29",
+      "viewers": 0,
+      "likes": 10100,
+      "messages": 27,
+      "timestamp": 1791246542516
+    },
+    {
+      "time": "21:31",
+      "viewers": 0,
+      "likes": 10100,
+      "messages": 27,
+      "timestamp": 1791246662530
+    },
+    {
+      "time": "21:33",
+      "viewers": 0,
+      "likes": 10100,
+      "messages": 27,
+      "timestamp": 1791246782533
+    },
+    {
+      "time": "21:35",
+      "viewers": 0,
+      "likes": 10100,
+      "messages": 27,
+      "timestamp": 1791246902543
+    },
+    {
+      "time": "21:37",
+      "viewers": 0,
+      "likes": 10100,
+      "messages": 27,
+      "timestamp": 1791247022559
+    },
+    {
+      "time": "21:39",
+      "viewers": 0,
+      "likes": 10100,
+      "messages": 27,
+      "timestamp": 1791247142575
+    },
+    {
+      "time": "21:41",
+      "viewers": 0,
+      "likes": 10100,
+      "messages": 27,
+      "timestamp": 1791247262579
+    },
+    {
+      "time": "21:43",
+      "viewers": 0,
+      "likes": 10100,
+      "messages": 27,
+      "timestamp": 1791247382593
+    },
+    {
+      "time": "21:43",
+      "viewers": 0,
+      "likes": 10100,
+      "messages": 27,
+      "timestamp": 1791247412296
+    },
+    {
+      "time": "21:45",
+      "viewers": 0,
+      "likes": 10100,
+      "messages": 27,
+      "timestamp": 1791247532305
+    },
+    {
+      "time": "21:47",
+      "viewers": 0,
+      "likes": 10100,
+      "messages": 27,
+      "timestamp": 1791247652307
+    },
+    {
+      "time": "21:49",
+      "viewers": 0,
+      "likes": 10100,
+      "messages": 27,
+      "timestamp": 1791247772322
+    },
+    {
+      "time": "21:51",
+      "viewers": 0,
+      "likes": 10100,
+      "messages": 27,
+      "timestamp": 1791247892330
+    },
+    {
+      "time": "21:53",
+      "viewers": 0,
+      "likes": 10100,
+      "messages": 27,
+      "timestamp": 1791248012341
+    },
+    {
+      "time": "21:55",
+      "viewers": 0,
+      "likes": 10100,
+      "messages": 27,
+      "timestamp": 1791248132344
+    },
+    {
+      "time": "21:57",
+      "viewers": 0,
+      "likes": 10100,
+      "messages": 27,
+      "timestamp": 1791248252346
+    },
+    {
+      "time": "21:59",
+      "viewers": 0,
+      "likes": 10100,
+      "messages": 27,
+      "timestamp": 1791248372349
+    },
+    {
+      "time": "22:01",
+      "viewers": 0,
+      "likes": 10100,
+      "messages": 27,
+      "timestamp": 1791248492355
+    },
+    {
+      "time": "22:03",
+      "viewers": 0,
+      "likes": 10100,
+      "messages": 27,
+      "timestamp": 1791248612357
+    },
+    {
+      "time": "22:05",
+      "viewers": 0,
+      "likes": 10100,
+      "messages": 27,
+      "timestamp": 1791248732365
+    },
+    {
+      "time": "22:07",
+      "viewers": 0,
+      "likes": 10100,
+      "messages": 27,
+      "timestamp": 1791248852371
+    }
+  ],
+  "giftList": [
+    {
+      "id": "gift-1791246451913-568",
+      "user": "DoadorTop",
+      "giftName": "Café Especial ☕",
+      "count": 10,
+      "diamonds": 100,
+      "platform": "simulador",
+      "timestamp": 1791246451913
+    }
+  ],
+  "followList": [],
+  "subList": [],
+  "donateList": [],
+  "userLikes": {},
+  "userGifts": {
+    "doadortop": 100
+  }
+}

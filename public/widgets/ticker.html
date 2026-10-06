@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Coffee Bot - Stream Ticker (OBS)</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      background: transparent;
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      overflow: hidden;
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+    }
+
+    .ticker-bar {
+      display: flex;
+      align-items: center;
+      width: 100%;
+      height: 44px;
+      background: rgba(18, 14, 12, 0.9);
+      border-top: 2px solid #d97706;
+      border-bottom: 2px solid #d97706;
+      color: #fff;
+      overflow: hidden;
+      position: relative;
+      box-shadow: 0 5px 20px rgba(0, 0, 0, 0.6);
+    }
+
+    .ticker-badge {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: linear-gradient(135deg, #d97706, #92400e);
+      padding: 0 18px;
+      height: 100%;
+      font-weight: 800;
+      font-size: 13px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: #fff;
+      z-index: 10;
+      box-shadow: 5px 0 15px rgba(0,0,0,0.4);
+    }
+
+    .ticker-track {
+      display: flex;
+      align-items: center;
+      gap: 50px;
+      white-space: nowrap;
+      animation: marquee 25s linear infinite;
+      padding-left: 20px;
+    }
+
+    .ticker-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      color: #fef3c7;
+    }
+
+    .ticker-item span {
+      color: #fbbf24;
+      font-weight: 700;
+    }
+
+    @keyframes marquee {
+      0% { transform: translateX(100%); }
+      100% { transform: translateX(-100%); }
+    }
+  </style>
+</head>
+<body>
+  <div class="ticker-bar">
+    <div class="ticker-badge">☕ COFFEE BOT</div>
+    <div class="ticker-track" id="tickerTrack">
+      <div class="ticker-item">☕ Cafés Servidos Hoje: <span id="tCoffees">0</span></div>
+      <div class="ticker-item">🏆 Maior Viciado em Café: <span id="tTopUser">Nenhum</span></div>
+      <div class="ticker-item">💡 Digite <span>!cafe</span> no chat para encher a xícara na tela!</div>
+      <div class="ticker-item">⏱️ Duração da Live: <span id="tUptime">0m</span></div>
+      <div class="ticker-item">🎁 Sorteio: Digite <span>!entrar</span></div>
+    </div>
+  </div>
+
+  <script>
+    const tCoffees = document.getElementById('tCoffees');
+    const tTopUser = document.getElementById('tTopUser');
+    const tUptime = document.getElementById('tUptime');
+
+    function updateStats() {
+      fetch('/api/status')
+        .then(r => r.json())
+        .then(data => {
+          if (data.coffeeMeter) tCoffees.textContent = data.coffeeMeter.current;
+          if (data.topPoints && data.topPoints[0]) {
+            tTopUser.textContent = `@${data.topPoints[0].user} (${data.topPoints[0].beans} grãos)`;
+          }
+          if (data.uptime) tUptime.textContent = data.uptime;
+        })
+        .catch(console.error);
+    }
+
+    updateStats();
+    setInterval(updateStats, 15000);
+  </script>
+</body>
+</html>

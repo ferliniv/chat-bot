@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Coffee Bot - Leaderboard Geral (OBS Widget)</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: transparent;
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      overflow: hidden;
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      align-items: flex-start;
+      justify-content: flex-start;
+      padding: 20px;
+    }
+
+    .widget-container {
+      width: 380px;
+      background: rgba(18, 14, 12, 0.95);
+      border: 2px solid #f59e0b;
+      border-radius: 18px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.6), 0 0 25px rgba(245, 158, 11, 0.25);
+      backdrop-filter: blur(12px);
+      padding: 16px 18px;
+      color: #fff;
+      transition: border-color 0.4s ease;
+    }
+
+    .widget-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      margin-bottom: 12px;
+    }
+
+    .header-icon {
+      font-size: 26px;
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 0 15px rgba(245, 158, 11, 0.4);
+      transition: all 0.4s ease;
+    }
+
+    .header-text h2 {
+      font-size: 16px;
+      font-weight: 800;
+      color: #fff;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+    .header-text p {
+      font-size: 11px;
+      color: #9ca3af;
+    }
+
+    .tab-pills {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 12px;
+    }
+
+    .pill-btn {
+      flex: 1;
+      padding: 5px 8px;
+      font-size: 11px;
+      font-weight: 700;
+      border-radius: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      background: rgba(255, 255, 255, 0.05);
+      color: #9ca3af;
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.2s ease;
+    }
+
+    .pill-btn.active {
+      background: #f59e0b;
+      color: #000;
+      border-color: #f59e0b;
+      box-shadow: 0 0 10px rgba(245, 158, 11, 0.4);
+    }
+
+    .ranking-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .rank-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 12px;
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      transition: all 0.3s ease;
+    }
+
+    .rank-item:first-child {
+      background: linear-gradient(90deg, rgba(245, 158, 11, 0.22), rgba(239, 68, 68, 0.15));
+      border-color: rgba(245, 158, 11, 0.45);
+    }
+
+    .rank-badge {
+      font-size: 14px;
+      font-weight: 800;
+      width: 26px;
+      height: 26px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 6px;
+    }
+
+    .rank-1 .rank-badge { color: #fde047; text-shadow: 0 0 8px #eab308; }
+    .rank-2 .rank-badge { color: #e2e8f0; }
+    .rank-3 .rank-badge { color: #fdba74; }
+    .rank-other .rank-badge { color: #9ca3af; font-size: 12px; }
+
+    .user-info {
+      flex: 1;
+      overflow: hidden;
+    }
+
+    .username {
+      font-size: 13px;
+      font-weight: 700;
+      color: #fff;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .score-badge {
+      font-size: 13px;
+      font-weight: 800;
+      color: #fbbf24;
+      background: rgba(251, 191, 36, 0.12);
+      border: 1px solid rgba(251, 191, 36, 0.3);
+      padding: 3px 8px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 20px 10px;
+      color: #9ca3af;
+      font-size: 12px;
+    }
+  </style>
+</head>
+<body>
+  <div class="widget-container" id="widgetContainer">
+    <div class="widget-header">
+      <div class="header-icon" id="headerIcon">🏆</div>
+      <div class="header-text">
+        <h2 id="headerTitle">Top da Transmissão</h2>
+        <p id="headerDesc">Ranking ao vivo dos espectadores</p>
+      </div>
+    </div>
+
+    <div class="tab-pills" id="tabPills">
+      <div class="pill-btn active" onclick="switchTab('gifts')">🎁 Presentes</div>
+      <div class="pill-btn" onclick="switchTab('likes')">❤️ Likes</div>
+      <div class="pill-btn" onclick="switchTab('cafezinhos')">☕ Cafezinhos</div>
+    </div>
+
+    <div class="ranking-list" id="rankingList">
+      <div class="empty-state">Carregando dados...</div>
+    </div>
+  </div>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    let currentTab = params.get('type') || 'gifts';
+    const autoCycle = params.get('cycle') === 'true';
+
+    const rankingList = document.getElementById('rankingList');
+    const headerTitle = document.getElementById('headerTitle');
+    const headerDesc = document.getElementById('headerDesc');
+    const headerIcon = document.getElementById('headerIcon');
+    const widgetContainer = document.getElementById('widgetContainer');
+
+    const config = {
+      gifts: {
+        title: 'Top Presentes',
+        desc: 'Maiores apoiadores da transmissão',
+        icon: '🎁',
+        iconBg: 'linear-gradient(135deg, #ec4899, #9d174d)',
+        borderColor: '#ec4899',
+        scorePrefix: '💎 ',
+        api: '/api/leaderboard/gifts',
+        valKey: 'diamonds',
+        subKey: 'gifts'
+      },
+      likes: {
+        title: 'Top Likes',
+        desc: 'Quem mais curtiu no TikTok',
+        icon: '❤️',
+        iconBg: 'linear-gradient(135deg, #ef4444, #991b1b)',
+        borderColor: '#ef4444',
+        scorePrefix: '❤️ ',
+        api: '/api/leaderboard/likes',
+        valKey: 'likes'
+      },
+      cafezinhos: {
+        title: 'Top Cafezinhos',
+        desc: 'Maiores acumuladores da moeda',
+        icon: '☕',
+        iconBg: 'linear-gradient(135deg, #d97706, #78350f)',
+        borderColor: '#f59e0b',
+        scorePrefix: '☕ ',
+        api: '/api/leaderboard/points',
+        valKey: 'points'
+      }
+    };
+
+    function switchTab(type) {
+      if (!config[type]) type = 'gifts';
+      currentTab = type;
+
+      const conf = config[type];
+      headerTitle.textContent = conf.title;
+      headerDesc.textContent = conf.desc;
+      headerIcon.textContent = conf.icon;
+      headerIcon.style.background = conf.iconBg;
+      widgetContainer.style.borderColor = conf.borderColor;
+
+      document.querySelectorAll('.pill-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.textContent.toLowerCase().includes(type.slice(0, 4)));
+      });
+
+      loadData();
+    }
+
+    async function loadData() {
+      const conf = config[currentTab];
+      try {
+        const res = await fetch(conf.api);
+        const data = await res.json();
+        render(data, conf);
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
+    function render(list, conf) {
+      if (!list || list.length === 0) {
+        rankingList.innerHTML = `<div class="empty-state">Aguardando participantes em ${conf.title}...</div>`;
+        return;
+      }
+
+      const medals = ['🥇', '🥈', '🥉'];
+      rankingList.innerHTML = list.slice(0, 5).map((item, idx) => {
+        const rankClass = idx === 0 ? 'rank-1' : idx === 1 ? 'rank-2' : idx === 2 ? 'rank-3' : 'rank-other';
+        const badge = idx < 3 ? medals[idx] : `#${idx + 1}`;
+        const name = item.user || 'Anônimo';
+        const val = item[conf.valKey] || 0;
+
+        return `
+          <div class="rank-item ${rankClass}">
+            <div class="rank-badge">${badge}</div>
+            <div class="user-info">
+              <div class="username">${name}</div>
+            </div>
+            <div class="score-badge">
+              ${conf.scorePrefix}${val.toLocaleString('pt-BR')}
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    if (autoCycle) {
+      const tabs = ['gifts', 'likes', 'cafezinhos'];
+      let cycleIdx = tabs.indexOf(currentTab);
+      setInterval(() => {
+        cycleIdx = (cycleIdx + 1) % tabs.length;
+        switchTab(tabs[cycleIdx]);
+      }, 12000);
+    }
+
+    switchTab(currentTab);
+    setInterval(loadData, 8000);
+  </script>
+</body>
+</html>

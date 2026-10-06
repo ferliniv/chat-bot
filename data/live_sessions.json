@@ -1,0 +1,208 @@
+[
+  {
+    "id": "session-1791247444449",
+    "title": "Live Especial de Segunda-Feira",
+    "date": "05/10/2026",
+    "startTime": 1790990018231,
+    "endTime": 1791247444449,
+    "duration": "71h 30m",
+    "peakViewers": 0,
+    "totalLikes": 10100,
+    "totalGifts": 10,
+    "totalGiftValue": 100,
+    "coffeesPoured": 17,
+    "totalMessages": 27,
+    "totalCommands": 14,
+    "uniqueChatters": 8,
+    "clipsCount": 3,
+    "notes": "Transmissão incrível com muitos cafezinhos!",
+    "topGivers": [
+      {
+        "user": "doadortop",
+        "value": 100
+      }
+    ],
+    "topLikers": [],
+    "giftList": [
+      {
+        "id": "gift-1791246451913-568",
+        "user": "DoadorTop",
+        "giftName": "Café Especial ☕",
+        "count": 10,
+        "diamonds": 100,
+        "platform": "simulador",
+        "timestamp": 1791246451913
+      }
+    ],
+    "subList": [],
+    "donateList": [],
+    "followList": []
+  },
+  {
+    "id": "session-1728082800000",
+    "title": "Live #12 - Gameplay & Conversa com Chat",
+    "date": "04/10/2026",
+    "startTime": 1791150212204,
+    "endTime": 1791161012204,
+    "duration": "3h 00m",
+    "peakViewers": 85,
+    "totalLikes": 14500,
+    "totalGifts": 18,
+    "totalGiftValue": 320,
+    "coffeesPoured": 42,
+    "totalMessages": 890,
+    "totalCommands": 145,
+    "uniqueChatters": 56,
+    "clipsCount": 3,
+    "notes": "Meta de likes batida 2 vezes! Chuva de cafezinhos animou a comunidade.",
+    "topGivers": [
+      {
+        "user": "cafeinado_pro",
+        "value": 180
+      },
+      {
+        "user": "vinicius",
+        "value": 90
+      },
+      {
+        "user": "mod_master",
+        "value": 50
+      }
+    ],
+    "topLikers": [
+      {
+        "user": "vinicius",
+        "likes": 6500
+      },
+      {
+        "user": "viewer_amigo",
+        "likes": 3200
+      },
+      {
+        "user": "cafeinado_pro",
+        "likes": 2100
+      }
+    ],
+    "giftList": [
+      {
+        "id": "g1",
+        "user": "cafeinado_pro",
+        "giftName": "Café Quente ☕",
+        "count": 3,
+        "diamonds": 30,
+        "platform": "tiktok",
+        "timestamp": 1791156012204
+      },
+      {
+        "id": "g2",
+        "user": "vinicius",
+        "giftName": "Rosa 🌹",
+        "count": 10,
+        "diamonds": 10,
+        "platform": "tiktok",
+        "timestamp": 1791158012204
+      }
+    ],
+    "subList": [
+      {
+        "id": "s1",
+        "user": "cafeinado_pro",
+        "type": "fan_club",
+        "platform": "tiktok",
+        "timestamp": 1791157012204
+      }
+    ],
+    "donateList": [
+      {
+        "id": "d1",
+        "user": "apoiador_top",
+        "amount": "R$ 20,00",
+        "platform": "youtube",
+        "timestamp": 1791159012204
+      }
+    ],
+    "followList": [
+      {
+        "id": "f1",
+        "user": "novo_viewer1",
+        "platform": "tiktok",
+        "timestamp": 1791154012204
+      }
+    ]
+  },
+  {
+    "id": "session-1727996400000",
+    "title": "Live #11 - Sexta dos Games & Cafezinhos",
+    "date": "03/10/2026",
+    "startTime": 1791065612204,
+    "endTime": 1791074612204,
+    "duration": "2h 30m",
+    "peakViewers": 64,
+    "totalLikes": 11200,
+    "totalGifts": 12,
+    "totalGiftValue": 210,
+    "coffeesPoured": 35,
+    "totalMessages": 680,
+    "totalCommands": 110,
+    "uniqueChatters": 42,
+    "clipsCount": 2,
+    "notes": "Aquecimento do final de semana com mini-games.",
+    "topGivers": [
+      {
+        "user": "vinicius",
+        "value": 120
+      },
+      {
+        "user": "cafeinado_pro",
+        "value": 90
+      }
+    ],
+    "topLikers": [
+      {
+        "user": "vinicius",
+        "likes": 5100
+      },
+      {
+        "user": "mod_master",
+        "likes": 2800
+      }
+    ],
+    "giftList": [
+      {
+        "id": "g3",
+        "user": "vinicius",
+        "giftName": "Rosa 🌹",
+        "count": 10,
+        "diamonds": 10,
+        "platform": "tiktok",
+        "timestamp": 1791071612204
+      }
+    ],
+    "subList": [
+      {
+        "id": "s2",
+        "user": "vip_fiel",
+        "type": "sub",
+        "platform": "twitch",
+        "timestamp": 1791070612204
+      }
+    ],
+    "donateList": [
+      {
+        "id": "d2",
+        "user": "anonimo",
+        "amount": "R$ 10,00",
+        "platform": "youtube",
+        "timestamp": 1791072612204
+      }
+    ],
+    "followList": [
+      {
+        "id": "f2",
+        "user": "gamer_br",
+        "platform": "tiktok",
+        "timestamp": 1791068612204
+      }
+    ]
+  }
+]

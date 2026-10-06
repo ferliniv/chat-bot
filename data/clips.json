@@ -1,0 +1,32 @@
+[
+  {
+    "id": "clip-1791247444444-89",
+    "timestampFormatted": "00:55:12",
+    "timestampSeconds": 257426,
+    "realTime": "21:44:04",
+    "title": "Clutch espetacular com o café na mão",
+    "category": "epic",
+    "notes": "",
+    "createdAt": 1791247444444
+  },
+  {
+    "id": "clip-seed-1",
+    "timestampFormatted": "00:41:40",
+    "timestampSeconds": 2500,
+    "realTime": "19:41:40",
+    "title": "Vitória épica no clutch final!",
+    "category": "epic",
+    "notes": "Último segundo com 1 de HP e reação do chat!",
+    "createdAt": 1791161012205
+  },
+  {
+    "id": "clip-seed-2",
+    "timestampFormatted": "01:15:20",
+    "timestampSeconds": 4520,
+    "realTime": "20:15:20",
+    "title": "Chuva de cafezinhos bateu na meta de likes",
+    "category": "goal",
+    "notes": "Comemoração dos 10k likes ao vivo",
+    "createdAt": 1791161012205
+  }
+]

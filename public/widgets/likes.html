@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Coffee Bot - Widget de Likes OBS (+10k)</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      background: transparent;
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      overflow: hidden;
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .widget-container {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      background: rgba(18, 14, 12, 0.90);
+      border: 2px solid rgba(239, 68, 68, 0.5);
+      border-radius: 24px;
+      padding: 20px 32px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.7), inset 0 0 25px rgba(239, 68, 68, 0.15);
+      backdrop-filter: blur(12px);
+      width: 360px;
+      color: #fef2f2;
+      animation: float 4s ease-in-out infinite;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-6px); }
+    }
+
+    .widget-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 8px;
+    }
+
+    .heart-icon {
+      font-size: 28px;
+      color: #ef4444;
+      animation: beat 1.2s ease-in-out infinite;
+      filter: drop-shadow(0 0 10px rgba(239, 68, 68, 0.6));
+    }
+
+    @keyframes beat {
+      0%, 100% { transform: scale(1); }
+      15% { transform: scale(1.25); }
+      30% { transform: scale(1); }
+      45% { transform: scale(1.15); }
+    }
+
+    .widget-title {
+      font-size: 14px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      color: #f87171;
+      text-shadow: 0 0 10px rgba(239, 68, 68, 0.4);
+    }
+
+    /* Giant Like Counter */
+    .counter-wrapper {
+      margin: 10px 0 12px;
+      text-align: center;
+    }
+
+    .counter-number {
+      font-size: 44px;
+      font-weight: 900;
+      line-height: 1;
+      background: linear-gradient(135deg, #ffffff 20%, #fca5a5 60%, #ef4444 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      filter: drop-shadow(0 0 15px rgba(239, 68, 68, 0.4));
+      letter-spacing: 1px;
+      transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .counter-number.bump {
+      transform: scale(1.18);
+    }
+
+    .counter-sub {
+      font-size: 13px;
+      color: #9ca3af;
+      margin-top: 4px;
+      font-weight: 600;
+    }
+
+    .counter-sub strong {
+      color: #fca5a5;
+    }
+
+    /* Progress bar */
+    .progress-bar-bg {
+      width: 100%;
+      height: 14px;
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 8px;
+      overflow: hidden;
+      border: 1px solid rgba(239, 68, 68, 0.25);
+      position: relative;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #dc2626, #ef4444, #f87171);
+      border-radius: 8px;
+      transition: width 0.5s ease-out;
+      box-shadow: 0 0 12px rgba(239, 68, 68, 0.7);
+    }
+
+    .last-liker {
+      font-size: 11px;
+      color: #9ca3af;
+      margin-top: 10px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 90%;
+    }
+
+    .last-liker strong {
+      color: #f87171;
+    }
+
+    /* Floating Heart Particles */
+    .heart-particle {
+      position: absolute;
+      bottom: 20px;
+      font-size: 20px;
+      pointer-events: none;
+      animation: floatUp 2.5s ease-out forwards;
+      opacity: 0.9;
+      filter: drop-shadow(0 0 6px rgba(239, 68, 68, 0.8));
+    }
+
+    @keyframes floatUp {
+      0% {
+        transform: translateY(0) scale(0.6) rotate(0deg);
+        opacity: 0.9;
+      }
+      50% {
+        opacity: 1;
+        transform: translateY(-80px) scale(1.2) rotate(15deg);
+      }
+      100% {
+        transform: translateY(-160px) scale(0.8) rotate(-15deg);
+        opacity: 0;
+      }
+    }
+
+    /* Celebration effect when goal is reached */
+    .celebration-badge {
+      display: none;
+      position: absolute;
+      top: -16px;
+      background: linear-gradient(135deg, #f59e0b, #ef4444);
+      color: #fff;
+      font-size: 11px;
+      font-weight: 800;
+      padding: 4px 14px;
+      border-radius: 20px;
+      box-shadow: 0 0 15px rgba(245, 158, 11, 0.8);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      animation: pop 0.4s ease-out forwards;
+    }
+
+    @keyframes pop {
+      0% { transform: scale(0); }
+      70% { transform: scale(1.2); }
+      100% { transform: scale(1); }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="widget-container" id="widgetBox">
+    <div class="celebration-badge" id="celebBadge">🎉 META BATIDA!</div>
+
+    <div class="widget-header">
+      <span class="heart-icon">❤️</span>
+      <span class="widget-title">Meta de Curtidas</span>
+    </div>
+
+    <div class="counter-wrapper">
+      <div class="counter-number" id="likesCounter">0</div>
+      <div class="counter-sub">Próxima meta: <strong id="likesTarget">10.000</strong></div>
+    </div>
+
+    <div class="progress-bar-bg">
+      <div class="progress-bar-fill" id="progressFill"></div>
+    </div>
+
+    <div class="last-liker" id="lastLiker">Dê 2 toques na tela para apoiar! ☕</div>
+  </div>
+
+  <script src="/js/audio-synth.js"></script>
+  <script>
+    const likesCounterEl = document.getElementById('likesCounter');
+    const likesTargetEl = document.getElementById('likesTarget');
+    const progressFillEl = document.getElementById('progressFill');
+    const lastLikerEl = document.getElementById('lastLiker');
+    const widgetBox = document.getElementById('widgetBox');
+    const celebBadge = document.getElementById('celebBadge');
+
+    let currentLikes = 0;
+    let targetLikes = 10000;
+
+    function formatNumber(num) {
+      return Number(num || 0).toLocaleString('pt-BR');
+    }
+
+    function spawnHeartParticle() {
+      const p = document.createElement('div');
+      p.className = 'heart-particle';
+      const emojis = ['❤️', '💖', '🔥', '☕', '✨'];
+      p.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+      // Random horizontal position inside widget
+      const offset = (Math.random() - 0.5) * 160;
+      p.style.left = `calc(50% + ${offset}px)`;
+      widgetBox.appendChild(p);
+
+      setTimeout(() => {
+        p.remove();
+      }, 2500);
+    }
+
+    function updateLikes(total, target, user = null, added = 1) {
+      currentLikes = total;
+      if (target) targetLikes = target;
+
+      likesCounterEl.textContent = formatNumber(currentLikes);
+      likesTargetEl.textContent = formatNumber(targetLikes);
+
+      const pct = Math.min(100, Math.round((currentLikes / (targetLikes || 1)) * 100));
+      progressFillEl.style.width = pct + '%';
+
+      // Bump animation on number
+      likesCounterEl.classList.remove('bump');
+      void likesCounterEl.offsetWidth;
+      likesCounterEl.classList.add('bump');
+
+      // Spawn heart particle
+      spawnHeartParticle();
+      if (added >= 50) {
+        spawnHeartParticle();
+        spawnHeartParticle();
+      }
+
+      if (user && user !== 'Espectador') {
+        lastLikerEl.innerHTML = `Último like: <strong>@${user}</strong>`;
+      }
+
+      // Check if goal reached
+      if (currentLikes >= targetLikes) {
+        celebBadge.style.display = 'block';
+        if (window.SoundFX) {
+          window.SoundFX.playAlertChime();
+        }
+      } else {
+        celebBadge.style.display = 'none';
+      }
+    }
+
+    // Connect WebSocket
+    function connectWS() {
+      const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+      const wsUrl = `${protocol}//${window.location.host}/ws`;
+      const ws = new WebSocket(wsUrl);
+
+      ws.onmessage = (event) => {
+        try {
+          const payload = JSON.parse(event.data);
+          if (payload.type === 'like_event') {
+            updateLikes(payload.data.totalLikes, payload.data.target, payload.data.user, payload.data.likesAdded);
+          } else if (payload.type === 'like_goal_update') {
+            updateLikes(payload.data.current, payload.data.target);
+          } else if (payload.type === 'initial_state' && payload.data.likeGoal) {
+            updateLikes(payload.data.likeGoal.current, payload.data.likeGoal.target);
+          }
+        } catch (e) {
+          console.error(e);
+        }
+      };
+
+      ws.onclose = () => {
+        setTimeout(connectWS, 3000);
+      };
+    }
+
+    // Fetch initial status
+    fetch('/api/status')
+      .then(res => res.json())
+      .then(data => {
+        const total = (data.stats && data.stats.totalLikes) || (data.likeGoal && data.likeGoal.current) || 0;
+        const target = (data.likeGoal && data.likeGoal.target) || 10000;
+        updateLikes(total, target);
+      })
+      .catch(console.error);
+
+    connectWS();
+  </script>
+</body>
+</html>

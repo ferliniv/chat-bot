@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Coffee Bot - Coffee Cup Goal Widget (OBS)</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      background: transparent;
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      overflow: hidden;
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .widget-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      background: rgba(18, 14, 12, 0.88);
+      border: 2px solid rgba(217, 119, 6, 0.4);
+      border-radius: 20px;
+      padding: 20px 30px;
+      box-shadow: 0 10px 35px rgba(0, 0, 0, 0.6), inset 0 0 20px rgba(245, 158, 11, 0.1);
+      backdrop-filter: blur(10px);
+      width: 320px;
+      color: #fef3c7;
+      animation: float 4s ease-in-out infinite;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-5px); }
+    }
+
+    .widget-title {
+      font-size: 15px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: #fbbf24;
+      margin-bottom: 12px;
+      text-shadow: 0 0 10px rgba(251, 191, 36, 0.4);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* Coffee Cup Visual */
+    .cup-wrapper {
+      position: relative;
+      width: 110px;
+      height: 120px;
+      margin-bottom: 15px;
+    }
+
+    /* Steam Vapor */
+    .steam-container {
+      position: absolute;
+      top: -30px;
+      left: 15px;
+      width: 80px;
+      height: 40px;
+      display: flex;
+      justify-content: space-around;
+      pointer-events: none;
+    }
+    .steam-line {
+      width: 6px;
+      height: 25px;
+      background: rgba(255, 255, 255, 0.4);
+      border-radius: 10px;
+      filter: blur(3px);
+      animation: steam 2.2s infinite ease-out;
+    }
+    .steam-line:nth-child(2) { animation-delay: 0.6s; height: 32px; }
+    .steam-line:nth-child(3) { animation-delay: 1.2s; height: 20px; }
+
+    @keyframes steam {
+      0% { transform: translateY(10px) scaleX(0.8); opacity: 0; }
+      50% { opacity: 0.6; }
+      100% { transform: translateY(-25px) scaleX(1.4); opacity: 0; }
+    }
+
+    .cup-body {
+      position: absolute;
+      bottom: 0;
+      width: 85px;
+      height: 105px;
+      background: #2b1f1d;
+      border: 3px solid #f59e0b;
+      border-radius: 6px 6px 36px 36px;
+      overflow: hidden;
+      box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.8), 0 5px 15px rgba(0,0,0,0.5);
+    }
+
+    .liquid {
+      position: absolute;
+      bottom: 0;
+      width: 100%;
+      height: 25%;
+      background: linear-gradient(180deg, #d97706 0%, #78350f 40%, #451a03 100%);
+      transition: height 1s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .liquid-wave {
+      position: absolute;
+      top: -6px;
+      left: 0;
+      width: 200%;
+      height: 12px;
+      background: rgba(251, 191, 36, 0.4);
+      border-radius: 40%;
+      animation: wave 3s linear infinite;
+    }
+
+    @keyframes wave {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+
+    /* Cup Handle */
+    .cup-handle {
+      position: absolute;
+      right: 0;
+      top: 30px;
+      width: 28px;
+      height: 50px;
+      border: 3px solid #f59e0b;
+      border-left: none;
+      border-radius: 0 20px 20px 0;
+    }
+
+    /* Progress Info */
+    .goal-numbers {
+      font-size: 24px;
+      font-weight: 800;
+      color: #fff;
+      margin-bottom: 6px;
+    }
+    .goal-numbers span {
+      color: #fbbf24;
+      text-shadow: 0 0 8px rgba(251, 191, 36, 0.6);
+    }
+
+    .progress-bar-bg {
+      width: 100%;
+      height: 10px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 5px;
+      overflow: hidden;
+      margin-bottom: 8px;
+    }
+    .progress-bar-fill {
+      height: 100%;
+      width: 24%;
+      background: linear-gradient(90deg, #f59e0b, #fbbf24);
+      border-radius: 5px;
+      box-shadow: 0 0 10px rgba(245, 158, 11, 0.8);
+      transition: width 0.8s ease;
+    }
+
+    .last-drinker {
+      font-size: 11px;
+      color: #d1d5db;
+      font-style: italic;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 100%;
+    }
+
+    /* Pop Animation on increment */
+    .pulse {
+      animation: cupPulse 0.5s ease;
+    }
+    @keyframes cupPulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.1); filter: brightness(1.3); }
+      100% { transform: scale(1); }
+    }
+  </style>
+</head>
+<body>
+  <div class="widget-container" id="cupWidget">
+    <div class="widget-title" id="widgetTitle">Cafés do Dia ☕</div>
+    
+    <div class="cup-wrapper" id="cupWrapper">
+      <div class="steam-container">
+        <div class="steam-line"></div>
+        <div class="steam-line"></div>
+        <div class="steam-line"></div>
+      </div>
+      <div class="cup-body">
+        <div class="liquid" id="liquid">
+          <div class="liquid-wave"></div>
+        </div>
+      </div>
+      <div class="cup-handle"></div>
+    </div>
+
+    <div class="goal-numbers">
+      <span id="currentVal">0</span> / <span id="targetVal" style="color: #9ca3af;">50</span>
+    </div>
+
+    <div class="progress-bar-bg">
+      <div class="progress-bar-fill" id="progressFill"></div>
+    </div>
+
+    <div class="last-drinker" id="lastDrinker">Digite <strong>!cafe</strong> no chat!</div>
+  </div>
+
+  <script src="/js/audio-synth.js"></script>
+  <script>
+    const currentValEl = document.getElementById('currentVal');
+    const targetValEl = document.getElementById('targetVal');
+    const progressFillEl = document.getElementById('progressFill');
+    const liquidEl = document.getElementById('liquid');
+    const widgetTitleEl = document.getElementById('widgetTitle');
+    const lastDrinkerEl = document.getElementById('lastDrinker');
+    const cupWrapper = document.getElementById('cupWrapper');
+
+    function updateMeter(current, target, user = null) {
+      currentValEl.textContent = current;
+      targetValEl.textContent = target;
+
+      const pct = Math.min(100, Math.round((current / (target || 1)) * 100));
+      progressFillEl.style.width = pct + '%';
+      liquidEl.style.height = Math.max(10, pct) + '%';
+
+      if (user) {
+        lastDrinkerEl.innerHTML = `Último gole: <strong>@${user}</strong>`;
+        cupWrapper.classList.remove('pulse');
+        void cupWrapper.offsetWidth; // trigger reflow
+        cupWrapper.classList.add('pulse');
+        if (window.SoundFX) {
+          window.SoundFX.playCoffeePour();
+        }
+      }
+    }
+
+    // Connect to WebSocket
+    function connectWS() {
+      const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+      const wsUrl = `${protocol}//${window.location.host}/ws`;
+      const ws = new WebSocket(wsUrl);
+
+      ws.onopen = () => {
+        console.log('[Cup Widget] Conectado ao Coffee Bot Server');
+      };
+
+      ws.onmessage = (event) => {
+        try {
+          const payload = JSON.parse(event.data);
+          if (payload.type === 'coffee_poured') {
+            updateMeter(payload.data.current, payload.data.target, payload.data.user);
+          } else if (payload.type === 'meter_update') {
+            updateMeter(payload.data.current, payload.data.target);
+            if (payload.data.title) widgetTitleEl.textContent = payload.data.title;
+          }
+        } catch (e) {
+          console.error(e);
+        }
+      };
+
+      ws.onclose = () => {
+        setTimeout(connectWS, 3000);
+      };
+    }
+
+    // Fetch initial status
+    fetch('/api/status')
+      .then(res => res.json())
+      .then(data => {
+        if (data.coffeeMeter) {
+          widgetTitleEl.textContent = data.coffeeMeter.title || 'Cafés do Dia ☕';
+          updateMeter(data.coffeeMeter.current, data.coffeeMeter.target);
+        }
+      })
+      .catch(console.error);
+
+    connectWS();
+  </script>
+</body>
+</html>

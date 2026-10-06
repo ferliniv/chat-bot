@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Coffee Bot - Widget de Presentes & Doações (OBS)</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      background: transparent;
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      overflow: hidden;
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .widget-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      background: rgba(18, 14, 12, 0.90);
+      border: 2px solid rgba(234, 179, 8, 0.5);
+      border-radius: 24px;
+      padding: 20px 30px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.7), inset 0 0 25px rgba(234, 179, 8, 0.15);
+      backdrop-filter: blur(12px);
+      width: 360px;
+      color: #fefce8;
+      animation: float 4.5s ease-in-out infinite;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-5px); }
+    }
+
+    .widget-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+
+    .gift-icon {
+      font-size: 26px;
+      animation: bounce 1.5s ease infinite;
+    }
+
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-5px); }
+    }
+
+    .widget-title {
+      font-size: 14px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: #facc15;
+      text-shadow: 0 0 10px rgba(250, 204, 21, 0.5);
+    }
+
+    .counter-wrapper {
+      margin: 8px 0 12px;
+      text-align: center;
+    }
+
+    .counter-number {
+      font-size: 40px;
+      font-weight: 900;
+      line-height: 1;
+      background: linear-gradient(135deg, #ffffff 20%, #fef08a 60%, #eab308 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      filter: drop-shadow(0 0 15px rgba(234, 179, 8, 0.4));
+      letter-spacing: 1px;
+    }
+
+    .counter-sub {
+      font-size: 12px;
+      color: #9ca3af;
+      margin-top: 4px;
+      font-weight: 600;
+    }
+
+    .counter-sub strong {
+      color: #fde047;
+    }
+
+    .progress-bar-bg {
+      width: 100%;
+      height: 14px;
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 8px;
+      overflow: hidden;
+      border: 1px solid rgba(234, 179, 8, 0.3);
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #ca8a04, #eab308, #fef08a);
+      border-radius: 8px;
+      transition: width 0.5s ease-out;
+      box-shadow: 0 0 12px rgba(234, 179, 8, 0.7);
+    }
+
+    .last-donor {
+      font-size: 11px;
+      color: #9ca3af;
+      margin-top: 10px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 90%;
+    }
+
+    .last-donor strong {
+      color: #facc15;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="widget-container">
+    <div class="widget-header">
+      <span class="gift-icon">🎁</span>
+      <span class="widget-title" id="goalTitle">Meta de Presentes</span>
+    </div>
+
+    <div class="counter-wrapper">
+      <div class="counter-number" id="donatesCounter">0</div>
+      <div class="counter-sub">Próxima meta: <strong id="donatesTarget">50 Presentes</strong></div>
+    </div>
+
+    <div class="progress-bar-bg">
+      <div class="progress-bar-fill" id="progressFill"></div>
+    </div>
+
+    <div class="last-donor" id="lastDonor">Apoie a transmissão com um presente! ☕</div>
+  </div>
+
+  <script src="/js/audio-synth.js"></script>
+  <script>
+    const donatesCounterEl = document.getElementById('donatesCounter');
+    const donatesTargetEl = document.getElementById('donatesTarget');
+    const progressFillEl = document.getElementById('progressFill');
+    const lastDonorEl = document.getElementById('lastDonor');
+    const goalTitleEl = document.getElementById('goalTitle');
+
+    function updateDonates(current, target, user = null, giftName = null) {
+      donatesCounterEl.textContent = current;
+      donatesTargetEl.textContent = `${target} Presentes`;
+
+      const pct = Math.min(100, Math.round((current / (target || 1)) * 100));
+      progressFillEl.style.width = pct + '%';
+
+      if (user && giftName) {
+        lastDonorEl.innerHTML = `Último apoio: <strong>@${user}</strong> (${giftName})`;
+        if (window.SoundFX) {
+          window.SoundFX.playAlertChime();
+        }
+      }
+    }
+
+    function connectWS() {
+      const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+      const wsUrl = `${protocol}//${window.location.host}/ws`;
+      const ws = new WebSocket(wsUrl);
+
+      ws.onmessage = (event) => {
+        try {
+          const payload = JSON.parse(event.data);
+          if (payload.type === 'gift_event') {
+            updateDonates(payload.data.totalGifts, 50, payload.data.user, payload.data.giftName);
+          } else if (payload.type === 'donate_goal_update') {
+            updateDonates(payload.data.current, payload.data.target);
+            if (payload.data.title) goalTitleEl.textContent = payload.data.title;
+          }
+        } catch (e) {
+          console.error(e);
+        }
+      };
+
+      ws.onclose = () => {
+        setTimeout(connectWS, 3000);
+      };
+    }
+
+    fetch('/api/status')
+      .then(r => r.json())
+      .then(data => {
+        const current = (data.stats && data.stats.totalGifts) || 0;
+        const target = (data.donateGoal && data.donateGoal.target) || 50;
+        if (data.donateGoal && data.donateGoal.title) goalTitleEl.textContent = data.donateGoal.title;
+        updateDonates(current, target);
+      })
+      .catch(console.error);
+
+    connectWS();
+  </script>
+</body>
+</html>

@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Coffee Bot - Top Cafezinhos (OBS Widget)</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: transparent;
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      overflow: hidden;
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      align-items: flex-start;
+      justify-content: flex-start;
+      padding: 20px;
+    }
+
+    .widget-container {
+      width: 360px;
+      background: rgba(18, 14, 12, 0.94);
+      border: 2px solid #f59e0b;
+      border-radius: 18px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.6), 0 0 20px rgba(245, 158, 11, 0.25);
+      backdrop-filter: blur(12px);
+      padding: 16px 18px;
+      color: #fff;
+    }
+
+    .widget-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid rgba(245, 158, 11, 0.3);
+      margin-bottom: 12px;
+    }
+
+    .header-icon {
+      font-size: 26px;
+      width: 44px;
+      height: 44px;
+      background: linear-gradient(135deg, #d97706, #78350f);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 0 15px rgba(217, 119, 6, 0.4);
+    }
+
+    .header-text h2 {
+      font-size: 16px;
+      font-weight: 800;
+      color: #fef3c7;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+    .header-text p {
+      font-size: 11px;
+      color: #9ca3af;
+    }
+
+    .ranking-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .rank-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 12px;
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      transition: all 0.3s ease;
+    }
+
+    .rank-item:first-child {
+      background: linear-gradient(90deg, rgba(234, 179, 8, 0.22), rgba(180, 83, 9, 0.15));
+      border-color: rgba(234, 179, 8, 0.45);
+    }
+
+    .rank-badge {
+      font-size: 14px;
+      font-weight: 800;
+      width: 26px;
+      height: 26px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 6px;
+    }
+
+    .rank-1 .rank-badge { color: #fde047; text-shadow: 0 0 8px #eab308; }
+    .rank-2 .rank-badge { color: #e2e8f0; }
+    .rank-3 .rank-badge { color: #fdba74; }
+    .rank-other .rank-badge { color: #9ca3af; font-size: 12px; }
+
+    .user-info {
+      flex: 1;
+      overflow: hidden;
+    }
+
+    .username {
+      font-size: 13px;
+      font-weight: 700;
+      color: #fff;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .score-badge {
+      font-size: 13px;
+      font-weight: 800;
+      color: #fbbf24;
+      background: rgba(251, 191, 36, 0.12);
+      border: 1px solid rgba(251, 191, 36, 0.3);
+      padding: 3px 8px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 20px 10px;
+      color: #9ca3af;
+      font-size: 12px;
+    }
+  </style>
+</head>
+<body>
+  <div class="widget-container">
+    <div class="widget-header">
+      <div class="header-icon">☕</div>
+      <div class="header-text">
+        <h2>Top Cafezinhos</h2>
+        <p>Maiores acumuladores da moeda</p>
+      </div>
+    </div>
+    <div class="ranking-list" id="rankingList">
+      <div class="empty-state">Aguardando Cafezinhos na transmissão... ☕</div>
+    </div>
+  </div>
+
+  <script>
+    const rankingList = document.getElementById('rankingList');
+
+    async function loadRanking() {
+      try {
+        const res = await fetch('/api/leaderboard/points');
+        const data = await res.json();
+        render(data);
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
+    function render(list) {
+      if (!list || list.length === 0) {
+        rankingList.innerHTML = '<div class="empty-state">Aguardando Cafezinhos na transmissão... ☕</div>';
+        return;
+      }
+
+      const medals = ['🥇', '🥈', '🥉'];
+      rankingList.innerHTML = list.slice(0, 5).map((item, idx) => {
+        const rankClass = idx === 0 ? 'rank-1' : idx === 1 ? 'rank-2' : idx === 2 ? 'rank-3' : 'rank-other';
+        const badge = idx < 3 ? medals[idx] : `#${idx + 1}`;
+        const name = item.user || 'Anônimo';
+        const points = item.points || 0;
+
+        return `
+          <div class="rank-item ${rankClass}">
+            <div class="rank-badge">${badge}</div>
+            <div class="user-info">
+              <div class="username">${name}</div>
+            </div>
+            <div class="score-badge">
+              ☕ ${points.toLocaleString('pt-BR')}
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function connectWS() {
+      const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+      const wsUrl = `${protocol}//${window.location.host}/ws`;
+      const ws = new WebSocket(wsUrl);
+
+      ws.onmessage = (event) => {
+        try {
+          const payload = JSON.parse(event.data);
+          if (payload.type === 'points_update' || payload.type === 'stats_update' || payload.type === 'stats_reset') {
+            loadRanking();
+          }
+        } catch (e) {}
+      };
+
+      ws.onclose = () => setTimeout(connectWS, 4000);
+    }
+
+    loadRanking();
+    setInterval(loadRanking, 10000);
+    connectWS();
+  </script>
+</body>
+</html>

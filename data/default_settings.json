@@ -1,0 +1,89 @@
+{
+  "botName": "Coffee Bot",
+  "prefix": "!",
+  "port": 3334,
+  "soundEnabled": true,
+  "currency": {
+    "name": "Cafezinho",
+    "plural": "Cafezinhos",
+    "farmingEnabled": true,
+    "farmingIntervalMinutes": 2,
+    "farmingAmount": 5,
+    "subMultiplier": 1.5,
+    "tiktokFanMultiplier": 1.5,
+    "youtubeMemberMultiplier": 1.5,
+    "vipMultiplier": 1.2,
+    "coffeeReward": 10
+  },
+  "minigames": {
+    "roulette": {
+      "winChance": 50,
+      "multiplier": 2.0,
+      "minBet": 1,
+      "maxBet": 10000,
+      "cooldownMinutes": 5
+    },
+    "slots": {
+      "winChancePercent": 40,
+      "jackpotMultiplier": 5.0,
+      "pairMultiplier": 1.5,
+      "minBet": 5,
+      "maxBet": 5000,
+      "cooldownMinutes": 5
+    },
+    "duel": {
+      "timeoutSeconds": 60,
+      "minBet": 5,
+      "maxBet": 20000,
+      "houseFeePercent": 0,
+      "cooldownMinutes": 5
+    }
+  },
+  "likeGoal": {
+    "current": 0,
+    "target": 10000,
+    "step": 5000,
+    "autoIncrement": true,
+    "milestoneAlert": true,
+    "rewardAllActive": 25
+  },
+  "donateGoal": {
+    "current": 0,
+    "target": 10,
+    "step": 10,
+    "autoIncrement": true,
+    "milestoneAlert": true,
+    "rewardAllActive": 25,
+    "title": "Meta de Presentes 🎁"
+  },
+  "twitch": {
+    "enabled": false,
+    "channel": "",
+    "botUsername": "CoffeeBot",
+    "oauthToken": ""
+  },
+  "youtube": {
+    "liveId": "eQte0FqK0LU"
+  },
+  "tiktok": {
+    "username": "gamescoffeesr",
+    "apiKey": ""
+  },
+  "moderation": {
+    "filterCaps": true,
+    "capsThresholdPercent": 70,
+    "capsMinLength": 10,
+    "blockLinks": false,
+    "permittedUsers": []
+  },
+  "coffeeMeter": {
+    "target": 50,
+    "current": 12,
+    "title": "Cafés do Dia ☕"
+  },
+  "raffle": {
+    "active": false,
+    "prize": "VIP por 1 mês na live + 500 Cafezinhos",
+    "entries": []
+  }
+}

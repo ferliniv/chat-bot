@@ -1,0 +1,220 @@
+[
+  {
+    "name": "cafe",
+    "aliases": [
+      "coffee",
+      "cafezinho",
+      "coffeetime"
+    ],
+    "response": "☕ @$(user) acabou de preparar e tomar um café quentinho! +$(coffeeReward) Cafezinhos adicionados. Meta da live: $(coffeeCount) xícaras!",
+    "cooldown": 20,
+    "userCooldown": 40,
+    "permission": "everyone",
+    "enabled": true,
+    "action": "drink_coffee",
+    "description": "Prepara um café, adiciona ao contador da tela e ganha Cafezinhos!"
+  },
+  {
+    "name": "cafezinho",
+    "aliases": [
+      "cafezinhos",
+      "graos",
+      "pontos",
+      "saldo",
+      "carteira"
+    ],
+    "response": "☕ @$(user), você possui $(userBeans) Cafezinhos! Participe dos mini-games: !roleta <quantia>, !slots <quantia> ou !duelo @user <quantia>",
+    "cooldown": 5,
+    "userCooldown": 15,
+    "permission": "everyone",
+    "enabled": true,
+    "action": "check_beans",
+    "description": "Consulta seu saldo de Cafezinhos da live."
+  },
+  {
+    "name": "roleta",
+    "aliases": [
+      "bet",
+      "apostar"
+    ],
+    "response": "",
+    "cooldown": 5,
+    "userCooldown": 300,
+    "permission": "everyone",
+    "enabled": true,
+    "action": "roulette",
+    "description": "Aposte Cafezinhos na torra do café: !roleta <quantia> ou !roleta tudo (Cooldown de 5min)"
+  },
+  {
+    "name": "slots",
+    "aliases": [
+      "cacaniqueis",
+      "slot"
+    ],
+    "response": "",
+    "cooldown": 5,
+    "userCooldown": 300,
+    "permission": "everyone",
+    "enabled": true,
+    "action": "slots",
+    "description": "Gire a máquina caça-níqueis (🧀, 🐍, ☕, 💎, ❤️): !slots <quantia> (Cooldown de 5min)"
+  },
+  {
+    "name": "duelo",
+    "aliases": [
+      "duel",
+      "desafio"
+    ],
+    "response": "",
+    "cooldown": 5,
+    "userCooldown": 300,
+    "permission": "everyone",
+    "enabled": true,
+    "action": "duel",
+    "description": "Desafie outro espectador para um duelo valendo Cafezinhos: !duelo @user <quantia> (Cooldown de 5min)"
+  },
+  {
+    "name": "aceitar",
+    "aliases": [
+      "accept"
+    ],
+    "response": "",
+    "cooldown": 2,
+    "userCooldown": 5,
+    "permission": "everyone",
+    "enabled": true,
+    "action": "accept_duel",
+    "description": "Aceita um duelo de Cafezinhos pendente."
+  },
+  {
+    "name": "recusar",
+    "aliases": [
+      "refuse",
+      "recuse"
+    ],
+    "response": "",
+    "cooldown": 2,
+    "userCooldown": 5,
+    "permission": "everyone",
+    "enabled": true,
+    "action": "refuse_duel",
+    "description": "Recusa um desafio de duelo de Cafezinhos."
+  },
+  {
+    "name": "topcafe",
+    "aliases": [
+      "ranking",
+      "top"
+    ],
+    "response": "🏆 Top 5 Cafezeiros da Live: $(topBeans)",
+    "cooldown": 15,
+    "userCooldown": 30,
+    "permission": "everyone",
+    "enabled": true,
+    "action": "top_beans",
+    "description": "Mostra o ranking de espectadores com mais Cafezinhos."
+  },
+  {
+    "name": "comandos",
+    "aliases": [
+      "help",
+      "commands",
+      "ajuda"
+    ],
+    "response": "☕ Comandos da Live: !cafe, !cafezinho (saldo), !roleta <quantia>, !slots <quantia>, !duelo @user <quantia>, !topcafe, !sorteio, !uptime",
+    "cooldown": 10,
+    "userCooldown": 20,
+    "permission": "everyone",
+    "enabled": true,
+    "description": "Lista os principais comandos e mini-games da live."
+  },
+  {
+    "name": "uptime",
+    "aliases": [
+      "tempo"
+    ],
+    "response": "⏱️ Estamos ao vivo há $(uptime)! Já pegou seu cafezinho hoje?",
+    "cooldown": 10,
+    "userCooldown": 30,
+    "permission": "everyone",
+    "enabled": true,
+    "description": "Informa há quanto tempo a live está em transmissão."
+  },
+  {
+    "name": "redes",
+    "aliases": [
+      "social",
+      "links"
+    ],
+    "response": "🌐 Siga nossas redes: YouTube: youtube.com/@seucanal | TikTok: @gamescoffeesr | Discord: discord.gg/seuservidor",
+    "cooldown": 10,
+    "userCooldown": 30,
+    "permission": "everyone",
+    "enabled": true,
+    "description": "Mostra as redes sociais da transmissão."
+  },
+  {
+    "name": "discord",
+    "aliases": [
+      "comunidade"
+    ],
+    "response": "💬 Venha para o nosso Discord tomar um café com a comunidade! Link: https://discord.gg/seuservidor",
+    "cooldown": 10,
+    "userCooldown": 30,
+    "permission": "everyone",
+    "enabled": true,
+    "description": "Link do servidor no Discord."
+  },
+  {
+    "name": "regras",
+    "aliases": [
+      "rules"
+    ],
+    "response": "📜 Regras do Chat: 1. Respeite todos 2. Sem spam 3. Sem spoilers 4. Mantenha a xícara sempre cheia!",
+    "cooldown": 15,
+    "userCooldown": 30,
+    "permission": "everyone",
+    "enabled": true,
+    "description": "Mostra as diretrizes de convivência do chat."
+  },
+  {
+    "name": "alerta",
+    "aliases": [
+      "alert",
+      "tts"
+    ],
+    "response": "📢 Alerta na tela por @$(user): $(args)",
+    "cooldown": 10,
+    "userCooldown": 30,
+    "permission": "vip",
+    "enabled": true,
+    "action": "trigger_alert",
+    "description": "Mostra um alerta personalizado na tela do OBS (VIP/Mods)."
+  },
+  {
+    "name": "sorteio",
+    "aliases": [
+      "raffle"
+    ],
+    "response": "🎁 Sorteio ativo: Digite !entrar para concorrer! Prêmio: $(rafflePrize) | Inscritos: $(raffleCount)",
+    "cooldown": 10,
+    "userCooldown": 20,
+    "permission": "everyone",
+    "enabled": true,
+    "action": "raffle_info",
+    "description": "Informações sobre o sorteio ativo."
+  },
+  {
+    "name": "entrar",
+    "aliases": [
+      "join"
+    ],
+    "response": "",
+    "cooldown": 2,
+    "userCooldown": 10,
+    "permission": "everyone",
+    "enabled": true,
+    "action": "raffle_join",
+    "description": "Entra no sorteio ativo."
+  }
+]

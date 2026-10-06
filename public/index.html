@@ -1,0 +1,1462 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Coffee Bot - Assistente de Transmissão & Live Analytics</title>
+  <link rel="stylesheet" href="/css/dashboard.css">
+</head>
+<body>
+
+  <!-- Top Navigation Header -->
+  <header class="app-header">
+    <div class="brand-wrapper">
+      <div class="brand-icon">☕</div>
+      <div>
+        <div class="brand-title">COFFEE BOT</div>
+        <div class="brand-subtitle">Assistente de Transmissão & Live Analytics (Porta 3334)</div>
+      </div>
+    </div>
+
+    <div class="header-stats">
+      <div class="stat-pill" title="Status da Conexão com TikTok Live">
+        <span class="status-indicator offline" id="tiktokIndicator"></span>
+        <span id="tiktokStatusText">🎵 TikTok: Conectando...</span>
+      </div>
+      <div class="stat-pill" title="Status da Conexão com YouTube Live">
+        <span class="status-indicator offline" id="youtubeIndicator"></span>
+        <span id="youtubeStatusText">▶️ YouTube: Standby</span>
+      </div>
+      <div class="stat-pill" title="Status da Conexão com Twitch">
+        <span class="status-indicator offline" id="twitchIndicator"></span>
+        <span id="twitchStatusText">👾 Twitch: Standby</span>
+      </div>
+      <div class="stat-pill">
+        <span>⏱️ Uptime:</span>
+        <strong id="statUptime">0s</strong>
+      </div>
+      <div class="stat-pill">
+        <span>👥 Viewers:</span>
+        <strong id="statHeaderViewers" style="color:#60a5fa;">0</strong>
+      </div>
+      <div class="stat-pill">
+        <span>❤️ Likes:</span>
+        <strong id="statHeaderLikes" style="color:#f87171;">0</strong>
+      </div>
+      <div class="stat-pill">
+        <span>☕ Moeda:</span>
+        <strong id="statHeaderCurrency" style="color:#fbbf24;">Cafezinho</strong>
+      </div>
+    </div>
+  </header>
+
+  <!-- Navigation Tabs -->
+  <nav class="tabs-nav">
+    <button class="tab-btn active" data-tab="analytics">📊 Saúde & Dados da Live</button>
+    <button class="tab-btn" data-tab="simulador">💬 Simulador de Chat & Jogos</button>
+    <button class="tab-btn" data-tab="comandos">⚡ Comandos Personalizados</button>
+    <button class="tab-btn" data-tab="timers">⏰ Timers Automáticos</button>
+    <button class="tab-btn" data-tab="metas">☕ Metas & Cafezinhos</button>
+    <button class="tab-btn" data-tab="clipes">🎬 Marcador de Clipes <span class="hotkey-badge">Tecla C</span></button>
+    <button class="tab-btn" data-tab="historico">📜 Histórico de Lives & Auditoria</button>
+    <button class="tab-btn" data-tab="widgets">🎥 Widgets para OBS</button>
+    <button class="tab-btn" data-tab="config">⚙️ Configurações Gerais & Regras</button>
+  </nav>
+
+  <!-- Main View Area -->
+  <main class="app-main">
+
+    <!-- 1. TAB: LIVE HEALTH & ANALYTICS -->
+    <div class="tab-pane active" id="tab-analytics">
+      
+      <!-- KPI Cards Grid with Details Arrow Buttons -->
+      <div class="kpi-grid">
+        <!-- 1. Viewers & Likes -->
+        <div class="kpi-card kpi-blue">
+          <div class="kpi-header">
+            <span class="kpi-title">Espectadores & Likes</span>
+            <span class="kpi-icon">👥</span>
+          </div>
+          <div class="kpi-value" id="kpiTotalViewers">0</div>
+          <div class="kpi-sub">
+            <span>Pico: <strong id="kpiPeakViewers">0</strong></span>
+            <span style="margin-left:auto;">Likes: <strong id="kpiTotalLikes">0</strong></span>
+          </div>
+          <div class="kpi-sub" style="margin-top:2px;">
+            <span id="kpiViewersBreakdown" style="font-size:10px;">TT: 0 | YT: 0 | TW: 0</span>
+            <button class="kpi-detail-btn" style="margin-left:auto;" onclick="toggleKpiDrawer('likes')">▼ Detalhes</button>
+          </div>
+        </div>
+
+        <!-- 2. Presentes (TikTok / Apoios) -->
+        <div class="kpi-card kpi-yellow">
+          <div class="kpi-header">
+            <span class="kpi-title">Presentes Recebidos</span>
+            <span class="kpi-icon">🎁</span>
+          </div>
+          <div class="kpi-value" id="kpiTotalGifts">0</div>
+          <div class="kpi-sub">
+            <span>Diamantes / Valor: <strong id="kpiGiftValue">0 💎</strong></span>
+            <button class="kpi-detail-btn" style="margin-left:auto;" onclick="toggleKpiDrawer('gifts')">▼ Detalhes</button>
+          </div>
+        </div>
+
+        <!-- 3. Novos Seguidores (Follows) -->
+        <div class="kpi-card kpi-green">
+          <div class="kpi-header">
+            <span class="kpi-title">Novos Seguidores</span>
+            <span class="kpi-icon">🌟</span>
+          </div>
+          <div class="kpi-value" id="kpiTotalFollows">0</div>
+          <div class="kpi-sub">
+            <span>Seguidores na transmissão</span>
+            <button class="kpi-detail-btn" style="margin-left:auto;" onclick="toggleKpiDrawer('follows')">▼ Detalhes</button>
+          </div>
+        </div>
+
+        <!-- 4. Membros & Subs (Twitch/TikTok/YT) -->
+        <div class="kpi-card kpi-purple">
+          <div class="kpi-header">
+            <span class="kpi-title">Subs & Membros</span>
+            <span class="kpi-icon">⭐</span>
+          </div>
+          <div class="kpi-value" id="kpiTotalSubs">0</div>
+          <div class="kpi-sub">
+            <span>Fã Clube, Membros & Subs</span>
+            <button class="kpi-detail-btn" style="margin-left:auto;" onclick="toggleKpiDrawer('subs')">▼ Detalhes</button>
+          </div>
+        </div>
+
+        <!-- 5. Apoios & Donates (SuperChat/Bits/Pix) -->
+        <div class="kpi-card kpi-red">
+          <div class="kpi-header">
+            <span class="kpi-title">Donates & Super Chats</span>
+            <span class="kpi-icon">💰</span>
+          </div>
+          <div class="kpi-value" id="kpiTotalDonates">0</div>
+          <div class="kpi-sub">
+            <span>Apoios diretos</span>
+            <button class="kpi-detail-btn" style="margin-left:auto;" onclick="toggleKpiDrawer('donates')">▼ Detalhes</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Expandable KPI Details Drawer Section (Para consultar caso perca um alerta) -->
+      <div class="kpi-drawer-container" id="kpiDrawerContainer">
+        <div class="drawer-header">
+          <div class="drawer-tabs">
+            <button class="drawer-tab-btn active" id="drawerTabGifts" onclick="switchDrawerTab('gifts')">🎁 Lista de Presentes</button>
+            <button class="drawer-tab-btn" id="drawerTabFollows" onclick="switchDrawerTab('follows')">🌟 Lista de Follows</button>
+            <button class="drawer-tab-btn" id="drawerTabSubs" onclick="switchDrawerTab('subs')">⭐ Lista de Subs & Membros</button>
+            <button class="drawer-tab-btn" id="drawerTabDonates" onclick="switchDrawerTab('donates')">💰 Lista de Donates</button>
+          </div>
+          <button class="btn btn-secondary btn-sm" onclick="closeKpiDrawer()">✕ Fechar Painel</button>
+        </div>
+
+        <!-- Drawer 1: Presentes -->
+        <div id="drawerPaneGifts" class="drawer-pane">
+          <div style="max-height: 280px; overflow-y: auto;">
+            <table class="styled-table">
+              <thead>
+                <tr>
+                  <th>Horário</th>
+                  <th>Espectador</th>
+                  <th>Presente</th>
+                  <th>Quantidade</th>
+                  <th>Diamantes / Valor</th>
+                  <th>Plataforma</th>
+                </tr>
+              </thead>
+              <tbody id="drawerGiftsTableBody">
+                <tr><td colspan="6" style="text-align:center; color:#9ca3af;">Nenhum presente registrado nesta sessão.</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Drawer 2: Follows -->
+        <div id="drawerPaneFollows" class="drawer-pane" style="display:none;">
+          <div style="max-height: 280px; overflow-y: auto;">
+            <table class="styled-table">
+              <thead>
+                <tr>
+                  <th>Horário</th>
+                  <th>Espectador</th>
+                  <th>Plataforma</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody id="drawerFollowsTableBody">
+                <tr><td colspan="4" style="text-align:center; color:#9ca3af;">Nenhum novo seguidor registrado nesta sessão.</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Drawer 3: Subs -->
+        <div id="drawerPaneSubs" class="drawer-pane" style="display:none;">
+          <div style="max-height: 280px; overflow-y: auto;">
+            <table class="styled-table">
+              <thead>
+                <tr>
+                  <th>Horário</th>
+                  <th>Espectador</th>
+                  <th>Tipo de Apoio</th>
+                  <th>Plataforma</th>
+                </tr>
+              </thead>
+              <tbody id="drawerSubsTableBody">
+                <tr><td colspan="4" style="text-align:center; color:#9ca3af;">Nenhum sub ou membro registrado nesta sessão.</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Drawer 4: Donates -->
+        <div id="drawerPaneDonates" class="drawer-pane" style="display:none;">
+          <div style="max-height: 280px; overflow-y: auto;">
+            <table class="styled-table">
+              <thead>
+                <tr>
+                  <th>Horário</th>
+                  <th>Espectador</th>
+                  <th>Valor</th>
+                  <th>Mensagem</th>
+                  <th>Plataforma</th>
+                </tr>
+              </thead>
+              <tbody id="drawerDonatesTableBody">
+                <tr><td colspan="5" style="text-align:center; color:#9ca3af;">Nenhum donate registrado nesta sessão.</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- MAIN SECTION: LIVE MESSAGES CENTER STAGE & STREAM MONITOR -->
+      <div class="live-stream-grid">
+
+        <!-- 1. Coluna Principal: Painel de Mensagens em Tempo Real -->
+        <div class="live-chat-panel">
+          <div class="live-chat-header">
+            <div>
+              <div class="card-title" style="display:flex; align-items:center; gap:8px;">
+                💬 Mensagens da Live em Tempo Real
+                <span class="badge-tag badge-tag-green" id="liveMessagesCountBadge">0 msgs</span>
+              </div>
+              <div class="card-desc">Fácil visualização com canal de origem identificado</div>
+            </div>
+
+            <!-- Platform Filters -->
+            <div class="live-chat-filters">
+              <span class="filter-pill active" data-platform="all" onclick="filterLiveMessages('all')">🌟 Todas</span>
+              <span class="filter-pill" data-platform="youtube" onclick="filterLiveMessages('youtube')">🔴 YouTube</span>
+              <span class="filter-pill" data-platform="tiktok" onclick="filterLiveMessages('tiktok')">🎵 TikTok</span>
+              <span class="filter-pill" data-platform="twitch" onclick="filterLiveMessages('twitch')">🟣 Twitch</span>
+              <span class="filter-pill" data-platform="simulador" onclick="filterLiveMessages('simulador')">☕ Simulador</span>
+              <button class="btn btn-secondary btn-sm" id="btnToggleAutoScroll" onclick="toggleAutoScroll()" title="Fixar rolagem automática">📌 Rolar: ON</button>
+              <button class="btn btn-secondary btn-sm" onclick="clearLiveMessages()">Limpar</button>
+            </div>
+          </div>
+
+          <!-- Messages Stream Container -->
+          <div class="live-chat-messages" id="liveUnifiedChatBox">
+            <div style="text-align:center; padding:30px 20px; color:#9ca3af; font-size:13px;">
+              ☕ <strong>Coffee Bot Monitor Ativo</strong><br>
+              Aguardando novas mensagens no chat ao vivo do TikTok, YouTube e Twitch...
+            </div>
+          </div>
+
+          <!-- Quick Test / Direct Chat Send Bar -->
+          <div class="chat-input-bar">
+            <form id="liveQuickSendForm" onsubmit="sendLiveQuickMessage(event)" style="display:flex; gap:10px;">
+              <input type="text" id="liveQuickInput" class="form-input" placeholder="Digite uma mensagem ou comando de teste (!cafe, !slots 50, etc)..." style="flex:1;">
+              <button type="submit" class="btn btn-primary" style="white-space:nowrap;">Enviar no Chat</button>
+            </form>
+          </div>
+        </div>
+
+        <!-- 2. Coluna Lateral: Rankings, Feed e Controles da Live -->
+        <div style="display:flex; flex-direction:column; gap:16px;">
+
+          <!-- Top Viewers Ranking Widget -->
+          <div class="mini-ranking-card">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+              <div>
+                <div class="card-title">🏆 Top Viewers da Transmissão</div>
+                <div class="card-desc">Ranking atualizado em tempo real</div>
+              </div>
+              <div style="display:flex; gap:4px;">
+                <button class="btn btn-secondary btn-sm active" id="rankBtnGifts" onclick="switchMiniRank('gifts')">🎁 Presentes</button>
+                <button class="btn btn-secondary btn-sm" id="rankBtnLikes" onclick="switchMiniRank('likes')">❤️ Likes</button>
+                <button class="btn btn-secondary btn-sm" id="rankBtnBeans" onclick="switchMiniRank('beans')">☕ Cafezinhos</button>
+              </div>
+            </div>
+            <div id="miniRankingsList" style="display:flex; flex-direction:column; gap:6px;">
+              <div style="font-size:12px; color:#9ca3af; text-align:center; padding:10px 0;">Carregando ranking...</div>
+            </div>
+          </div>
+
+          <!-- Real-Time Activity Feed -->
+          <div class="card" style="display:flex; flex-direction:column; padding:16px; margin:0;">
+            <div class="card-header" style="margin-bottom:10px;">
+              <div>
+                <div class="card-title">⚡ Feed de Atividades ao Vivo</div>
+                <div class="card-desc">Eventos em tempo real da transmissão</div>
+              </div>
+              <span class="badge-tag badge-tag-green">Live Feed</span>
+            </div>
+
+            <div class="activity-feed-box" id="activityFeedBox" style="max-height:200px;">
+              <div class="feed-item">
+                <div class="feed-icon">☕</div>
+                <div class="feed-body">
+                  <div class="feed-title">Coffee Bot Conectado</div>
+                  <div class="feed-desc">Monitorando chat, likes e eventos da transmissão</div>
+                </div>
+                <div class="feed-time">Agora</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Quick Actions & Simulation Bar -->
+          <div class="card" style="padding:16px; margin:0;">
+            <div style="font-size:12px; font-weight:700; color:#fbbf24; margin-bottom:8px;">
+              ⚡ Ações de Teste & Engajamento Rápido:
+            </div>
+            <div style="display:flex; flex-wrap:wrap; gap:6px;">
+              <button class="btn btn-secondary btn-sm" onclick="simulateLikes(100)">❤️ +100 Likes</button>
+              <button class="btn btn-secondary btn-sm" onclick="simulateLikes(1000)">🔥 +1.000 Likes</button>
+              <button class="btn btn-secondary btn-sm" onclick="simulateGift('Rosa 🌹', 1, 1)">🌹 Rosa</button>
+              <button class="btn btn-secondary btn-sm" onclick="simulateGift('Café Premium ☕', 1, 10)">☕ Café (10 💎)</button>
+              <button class="btn btn-secondary btn-sm" onclick="simulateFollow('ViewerNovo', 'tiktok')">🌟 Seguidor</button>
+              <button class="btn btn-secondary btn-sm" onclick="simulateSub('FãClubista', 'fan_club', 'tiktok')">⭐ Fã Clube</button>
+              <button class="btn btn-secondary btn-sm" onclick="simulateDonate('SuperApoiador', 20, 'BRL')">💰 Donate R$20</button>
+              <button class="btn btn-primary btn-sm" onclick="triggerCoffeeRain(50)">🎉 Chuva de Cafezinhos (+50)</button>
+              <button class="btn btn-danger btn-sm" onclick="resetLiveStats()" style="margin-left:auto;">🔄 Resetar Sessão</button>
+            </div>
+          </div>
+
+          <!-- Collapsible Timeline Chart -->
+          <div class="chart-card" style="padding:16px; margin:0;">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <div class="card-title" style="font-size:14px;">📈 Evolução (Viewers & Likes)</div>
+              <div style="display:flex; gap:10px; font-size:11px;">
+                <span style="display:flex; align-items:center; gap:4px; color:#60a5fa;">
+                  <span style="width:8px; height:8px; background:#3b82f6; border-radius:50%; display:inline-block;"></span> Viewers
+                </span>
+                <span style="display:flex; align-items:center; gap:4px; color:#f87171;">
+                  <span style="width:8px; height:8px; background:#ef4444; border-radius:50%; display:inline-block;"></span> Likes
+                </span>
+              </div>
+            </div>
+            <div class="chart-canvas-container" style="height:150px;">
+              <canvas id="liveTimelineCanvas"></canvas>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- 2. TAB: CHAT SIMULATOR & MINI-GAMES -->
+    <div class="tab-pane" id="tab-simulador">
+      <div class="grid-2">
+        
+        <!-- Live Chat Sandbox -->
+        <div class="card" style="padding:0; overflow:hidden;">
+          <div style="padding:16px 20px; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center;">
+            <div>
+              <div class="card-title">💬 Chat ao Vivo & Simulador Interativo</div>
+              <div class="card-desc">Interaja com o Coffee Bot como Streamer, Mod, VIP ou Viewer</div>
+            </div>
+            <button class="btn btn-secondary btn-sm" onclick="document.getElementById('chatMessagesBox').innerHTML = ''">Limpar Chat</button>
+          </div>
+
+          <div class="chat-sandbox">
+            <div class="chat-messages-box" id="chatMessagesBox">
+              <div style="font-size:12px; color:#9ca3af; text-align:center; padding:10px 0;">
+                ☕ Bem-vindo ao <strong>Coffee Bot</strong>! Digite mensagens ou teste os mini-games abaixo.
+              </div>
+            </div>
+
+            <div class="chat-input-bar">
+              <div class="role-selectors">
+                <span style="font-weight:700;">Simular como:</span>
+                <label><input type="radio" name="simRole" value="broadcaster" checked> 👑 Streamer</label>
+                <label><input type="radio" name="simRole" value="mod"> ⚔️ Mod</label>
+                <label><input type="radio" name="simRole" value="vip"> 💎 VIP</label>
+                <label><input type="radio" name="simRole" value="sub"> ⭐ Sub</label>
+                <label><input type="radio" name="simRole" value="viewer"> 👤 Viewer</label>
+                <span style="margin-left:auto; font-size:12px; color:#fbbf24;">
+                  Saldo: <strong id="simUserBalance">150</strong> Cafezinhos
+                </span>
+              </div>
+
+              <form id="chatForm" class="chat-field-row">
+                <input type="text" id="simUsername" class="form-input" style="width:130px;" value="Vinicius" placeholder="Nome">
+                <input type="text" id="simMessageInput" class="form-input" placeholder="Digite uma mensagem ou comando (ex: !cafe, !cafezinho, !roleta 50, !slots 20)..." autocomplete="off" style="flex:1;">
+                <button type="submit" class="btn btn-primary">Enviar</button>
+              </form>
+            </div>
+          </div>
+        </div>
+
+        <!-- Quick Mini-Games & Preview -->
+        <div>
+          <!-- Cup Goal Mini Preview -->
+          <div class="card">
+            <div class="card-header">
+              <div>
+                <div class="card-title">☕ Meta da Live: Cafés Servidos</div>
+                <div class="card-desc">Atualiza instantaneamente quando os espectadores digitam !cafe</div>
+              </div>
+              <strong id="dashCupNumber" style="font-size:20px; color:#fbbf24;">0 / 50</strong>
+            </div>
+
+            <div style="background:rgba(255,255,255,0.08); height:14px; border-radius:7px; overflow:hidden; margin-bottom:14px;">
+              <div id="dashCupProgress" style="height:100%; width:20%; background:linear-gradient(90deg, #d97706, #fbbf24); border-radius:7px; transition:width 0.4s;"></div>
+            </div>
+
+            <div style="display:flex; gap:10px;">
+              <button class="btn btn-primary btn-sm" onclick="window.open('/widgets/cup', '_blank')">Abrir Widget no Navegador</button>
+              <button class="btn btn-secondary btn-sm" onclick="copyWidgetUrl('cup')">Copiar URL do OBS</button>
+            </div>
+          </div>
+
+          <!-- Quick Test Chips -->
+          <div class="card">
+            <div class="card-title">🎲 Mini-Games & Testes Rápidos com 1 Clique</div>
+            <div class="card-desc" style="margin-bottom:12px;">Clique para enviar imediatamente o comando no simulador:</div>
+            
+            <div class="chips-container">
+              <button class="chip quick-chip" data-cmd="!cafe">☕ !cafe (Pedir Café & Ganhar Cafezinhos)</button>
+              <button class="chip quick-chip" data-cmd="!cafezinho">💰 !cafezinho (Consultar Saldo)</button>
+              <button class="chip quick-chip" data-cmd="!roleta 50">🎰 !roleta 50 (Apostar na Roleta)</button>
+              <button class="chip quick-chip" data-cmd="!slots 50">💎 !slots 50 (Girar Caça-Níqueis)</button>
+              <button class="chip quick-chip" data-cmd="!duelo @mod_master 50">⚔️ !duelo @mod_master 50 (Desafiar)</button>
+              <button class="chip quick-chip" data-cmd="!aceitar">🤝 !aceitar (Aceitar Duelo)</button>
+              <button class="chip quick-chip" data-cmd="!topcafe">🏆 !topcafe (Ranking)</button>
+              <button class="chip quick-chip" data-cmd="!uptime">⏱️ !uptime (Tempo de Live)</button>
+              <button class="chip quick-chip" data-cmd="!sorteio">🎁 !sorteio (Info Sorteio)</button>
+              <button class="chip quick-chip" data-cmd="!entrar">🎟️ !entrar (Participar)</button>
+              <button class="chip quick-chip" data-cmd="!alerta Café quentinho saindo na live!">📢 !alerta (Alerta OBS)</button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- 3. TAB: CUSTOM COMMANDS -->
+    <div class="tab-pane" id="tab-comandos">
+      
+      <!-- Form to Add/Edit Command (Full Width Roomy Card) -->
+      <div class="card" id="cmdFormCard" style="margin-bottom:20px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+          <div>
+            <div class="card-title">➕ Criar / Editar Comando</div>
+            <div class="card-desc">Configure a palavra-chave, texto de resposta e permissões.</div>
+          </div>
+          <button type="button" class="btn btn-secondary btn-sm" onclick="resetCommandForm()">Limpar Formulário</button>
+        </div>
+
+        <form id="commandForm" onsubmit="saveCommand(event)">
+          <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap:14px;">
+            <div class="form-group" style="margin-bottom:0;">
+              <label class="form-label">Nome do Comando (sem ponto de exclamação)</label>
+              <input type="text" id="cmdName" class="form-input" placeholder="ex: cafe, discord, pix" required>
+            </div>
+
+            <div class="form-group" style="margin-bottom:0;">
+              <label class="form-label">Apelidos / Aliases (separados por vírgula)</label>
+              <input type="text" id="cmdAliases" class="form-input" placeholder="ex: coffee, cafezinho">
+            </div>
+
+            <div class="form-group" style="margin-bottom:0;">
+              <label class="form-label">Permissão Mínima</label>
+              <select id="cmdPermission" class="form-select">
+                <option value="everyone">Todos os Espectadores</option>
+                <option value="sub">Apenas Subscribers (Subs)</option>
+                <option value="vip">VIPs e Moderadores</option>
+                <option value="mod">Apenas Moderadores</option>
+                <option value="broadcaster">Apenas o Streamer</option>
+              </select>
+            </div>
+
+            <div class="form-group" style="margin-bottom:0;">
+              <label class="form-label">Cooldown Global / Usuário (segundos)</label>
+              <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+                <input type="number" id="cmdCooldown" class="form-input" value="10" min="0" placeholder="Global">
+                <input type="number" id="cmdUserCooldown" class="form-input" value="20" min="0" placeholder="Usuário">
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group" style="margin-top:14px;">
+            <label class="form-label">Resposta no Chat</label>
+            <textarea id="cmdResponse" class="form-textarea" rows="2" placeholder="Mensagem enviada pelo bot. Você pode usar variáveis dinâmicas!" required></textarea>
+            
+            <!-- Variable injection chips -->
+            <div style="margin-top:8px;">
+              <span style="font-size:11px; color:#9ca3af;">Clique para inserir variáveis dinâmicas:</span>
+              <div class="chips-container" style="margin-top:4px;">
+                <button type="button" class="chip" onclick="insertVariable('$(user)')">$(user)</button>
+                <button type="button" class="chip" onclick="insertVariable('$(target)')">$(target)</button>
+                <button type="button" class="chip" onclick="insertVariable('$(userCafezinhos)')">$(userCafezinhos)</button>
+                <button type="button" class="chip" onclick="insertVariable('$(currencyName)')">$(currencyName)</button>
+                <button type="button" class="chip" onclick="insertVariable('$(coffeeCount)')">$(coffeeCount)</button>
+                <button type="button" class="chip" onclick="insertVariable('$(totalLikes)')">$(totalLikes)</button>
+                <button type="button" class="chip" onclick="insertVariable('$(viewersCount)')">$(viewersCount)</button>
+                <button type="button" class="chip" onclick="insertVariable('$(topBeans)')">$(topBeans)</button>
+                <button type="button" class="chip" onclick="insertVariable('$(uptime)')">$(uptime)</button>
+                <button type="button" class="chip" onclick="insertVariable('$(args)')">$(args)</button>
+              </div>
+            </div>
+          </div>
+
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-top:14px;">
+            <div style="display:flex; align-items:center; gap:8px;">
+              <input type="checkbox" id="cmdEnabled" checked>
+              <label for="cmdEnabled" style="font-size:13px; cursor:pointer;">Comando Ativado</label>
+            </div>
+            <button type="submit" class="btn btn-primary">Salvar Comando</button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Commands List (Full Width, Wide Visibility, No Truncation) -->
+      <div class="card" style="padding:0; overflow:hidden;">
+        <div style="padding:16px 20px; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center;">
+          <div>
+            <div class="card-title">📜 Comandos Registrados no Coffee Bot</div>
+            <div class="card-desc">Lista completa com texto integral das respostas e ações especiais</div>
+          </div>
+          <span class="badge-tag badge-tag-amber" id="totalCommandsCountTag">Comandos Ativos</span>
+        </div>
+        <div style="overflow-x:auto;">
+          <table class="styled-table" style="width:100%;">
+            <thead>
+              <tr>
+                <th style="min-width:140px;">Comando</th>
+                <th style="min-width:110px;">Permissão</th>
+                <th style="min-width:320px;">Resposta / Ação (Texto Completo)</th>
+                <th style="min-width:120px;">Cooldowns</th>
+                <th style="min-width:90px;">Status</th>
+                <th style="min-width:130px; text-align:right;">Ações</th>
+              </tr>
+            </thead>
+            <tbody id="commandsTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- 4. TAB: AUTOMATED TIMERS -->
+    <div class="tab-pane" id="tab-timers">
+      <div class="grid-2">
+        
+        <!-- Form to Add/Edit Timer -->
+        <div class="card">
+          <div class="card-title">⏰ Criar / Editar Timer</div>
+          <div class="card-desc" style="margin-bottom:16px;">Mensagens automáticas enviadas periodicamente pelo bot no chat.</div>
+
+          <form id="timerForm" onsubmit="saveTimer(event)">
+            <input type="hidden" id="timerId">
+
+            <div class="form-group">
+              <label class="form-label">Nome do Timer (Identificação interna)</label>
+              <input type="text" id="timerName" class="form-input" placeholder="ex: Redes Sociais, Lembrança Discord" required>
+            </div>
+
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+              <div class="form-group">
+                <label class="form-label">Intervalo (Minutos)</label>
+                <input type="number" id="timerInterval" class="form-input" value="15" min="1" required>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Mínimo de Linhas de Chat</label>
+                <input type="number" id="timerLines" class="form-input" value="3" min="0" title="Só envia se o chat tiver tido pelo menos este número de mensagens">
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Mensagem do Timer</label>
+              <textarea id="timerMessage" class="form-textarea" rows="3" placeholder="Mensagem enviada no chat da live..." required></textarea>
+            </div>
+
+            <div class="form-group" style="display:flex; align-items:center; gap:8px;">
+              <input type="checkbox" id="timerEnabled" checked>
+              <label for="timerEnabled" style="font-size:13px; cursor:pointer;">Timer Ativado</label>
+            </div>
+
+            <div style="display:flex; gap:10px;">
+              <button type="submit" class="btn btn-primary">Salvar Timer</button>
+              <button type="button" class="btn btn-secondary" onclick="resetTimerForm()">Limpar</button>
+            </div>
+          </form>
+        </div>
+
+        <!-- Timers List -->
+        <div class="card" style="padding:0; overflow:hidden;">
+          <div style="padding:16px 20px; border-bottom:1px solid var(--border);">
+            <div class="card-title">📋 Timers Cadastrados</div>
+            <div class="card-desc">Mensagens programadas com regras de silêncio para evitar spam</div>
+          </div>
+          <div style="overflow-x:auto;">
+            <table class="styled-table">
+              <thead>
+                <tr>
+                  <th>Nome</th>
+                  <th>Intervalo</th>
+                  <th>Mín. Mensagens</th>
+                  <th>Mensagem</th>
+                  <th>Status</th>
+                  <th>Ações</th>
+                </tr>
+              </thead>
+              <tbody id="timersTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- 5. TAB: GOALS & CAFEZINHOS ECONOMY -->
+    <div class="tab-pane" id="tab-metas">
+      <div class="grid-2">
+        
+        <!-- Live Cup Goal Adjustment -->
+        <div class="card">
+          <div class="card-title">☕ Gerenciamento da Meta de Café</div>
+          <div class="card-desc" style="margin-bottom:16px;">Controle a meta exibida no widget do copo de café no OBS</div>
+
+          <div class="form-group">
+            <label class="form-label">Título da Meta</label>
+            <input type="text" id="meterTitleInput" class="form-input" value="Cafés do Dia ☕">
+          </div>
+
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+            <div class="form-group">
+              <label class="form-label">Cafés Atuais</label>
+              <input type="number" id="meterCurrentInput" class="form-input" value="16" min="0">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Meta Final (Objetivo)</label>
+              <input type="number" id="meterTargetInput" class="form-input" value="50" min="1">
+            </div>
+          </div>
+
+          <div style="display:flex; gap:10px; margin-top:8px;">
+            <button class="btn btn-primary" onclick="saveMeterSettings()">Atualizar Meta</button>
+            <button class="btn btn-secondary" onclick="addCoffeeDirect(1)">+1 Café</button>
+            <button class="btn btn-secondary" onclick="addCoffeeDirect(5)">+5 Cafés</button>
+            <button class="btn btn-danger" onclick="resetCoffeeMeter()">Zerar</button>
+          </div>
+        </div>
+
+        <!-- Raffle System -->
+        <div class="card">
+          <div class="card-title">🎁 Sorteio / Rifa da Live</div>
+          <div class="card-desc" style="margin-bottom:16px;">Abra sorteios para que os espectadores usem !entrar no chat</div>
+
+          <div class="form-group">
+            <label class="form-label">Prêmio do Sorteio</label>
+            <input type="text" id="rafflePrizeInput" class="form-input" value="VIP por 1 mês + 500 Cafezinhos">
+          </div>
+
+          <div style="display:flex; gap:10px; margin-bottom:14px;">
+            <button class="btn btn-primary" id="btnToggleRaffle" onclick="toggleRaffle()">Iniciar Sorteio</button>
+            <button class="btn btn-secondary" onclick="drawRaffleWinner()">Sortear Vencedor!</button>
+            <button class="btn btn-danger" onclick="clearRaffle()">Limpar Inscritos</button>
+          </div>
+
+          <div style="background:var(--bg-surface-elevated); padding:12px; border-radius:8px; border:1px solid var(--border);">
+            <div style="display:flex; justify-content:space-between; font-size:13px; margin-bottom:6px;">
+              <span>Total de Participantes:</span>
+              <strong id="raffleParticipantsCount" style="color:#fbbf24;">0</strong>
+            </div>
+            <div id="raffleParticipantsList" style="font-size:12px; color:var(--text-muted); max-height:80px; overflow-y:auto;">
+              Nenhum participante inscrito ainda.
+            </div>
+          </div>
+        </div>
+
+        <!-- Leaderboard (Cafezinhos) -->
+        <div class="card" style="grid-column: 1 / -1; padding:0; overflow:hidden;">
+          <div style="padding:16px 20px; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center;">
+            <div>
+              <div class="card-title">🏆 Ranking da Cafeteria (Cafezinhos da Live)</div>
+              <div class="card-desc">Espectadores mais ricos em Cafezinhos na transmissão</div>
+            </div>
+            <div style="display:flex; gap:8px;">
+              <input type="text" id="manualBonusUser" class="form-input" style="width:130px; padding:6px 10px;" placeholder="Nome do viewer">
+              <input type="number" id="manualBonusAmount" class="form-input" style="width:90px; padding:6px 10px;" placeholder="Quantia" value="100">
+              <button class="btn btn-primary btn-sm" onclick="giveManualPoints()">Dar Cafezinhos</button>
+            </div>
+          </div>
+          <div style="overflow-x:auto;">
+            <table class="styled-table">
+              <thead>
+                <tr>
+                  <th>Posição</th>
+                  <th>Espectador</th>
+                  <th>Saldo de Cafezinhos</th>
+                  <th>Ações Rápidas</th>
+                </tr>
+              </thead>
+              <tbody id="leaderboardBody"></tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- 6. TAB: OBS WIDGETS -->
+    <div class="tab-pane" id="tab-widgets">
+      <div style="margin-bottom:20px;">
+        <h2 style="font-size:20px; color:#fef3c7;">🎥 Widgets Prontos para OBS Studio / Streamlabs</h2>
+        <p style="color:var(--text-muted); font-size:13px; margin-top:4px;">
+          Adicione uma fonte do tipo <strong>"Navegador" (Browser Source)</strong> no OBS e cole os links abaixo. Todos contam com fundo transparente!
+        </p>
+      </div>
+
+      <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap:20px;">
+        
+        <!-- Widget 1: Coffee Cup Goal -->
+        <div class="widget-card">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <strong>☕ Copo de Café Animado (Goal)</strong>
+            <span class="badge-tag badge-tag-amber">380x360</span>
+          </div>
+          <p style="font-size:12px; color:var(--text-muted);">
+            Xícara fumegante que enche quando os espectadores usam <strong>!cafe</strong> no chat. Efeitos de vapor e som de café servido.
+          </p>
+          <div class="widget-url-box">
+            <button class="btn btn-primary btn-sm" onclick="copyWidgetUrl('cup')">Copiar URL OBS</button>
+            <button class="btn btn-secondary btn-sm" onclick="window.open('/widgets/cup', '_blank')">Visualizar</button>
+          </div>
+        </div>
+
+        <!-- Widget 2: Likes Counter (+10k) -->
+        <div class="widget-card">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <strong>❤️ Contador de Likes (+10k TikTok)</strong>
+            <span class="badge-tag badge-tag-amber">360x220</span>
+          </div>
+          <p style="font-size:12px; color:var(--text-muted);">
+            Contador gigante em tempo real com barra de progresso de meta (ex: 10k), chuva de corações e efeitos visuais ao bater metas.
+          </p>
+          <div class="widget-url-box">
+            <button class="btn btn-primary btn-sm" onclick="copyWidgetUrl('likes')">Copiar URL OBS</button>
+            <button class="btn btn-secondary btn-sm" onclick="window.open('/widgets/likes', '_blank')">Visualizar</button>
+          </div>
+        </div>
+
+        <!-- Widget 3: Gifts & Donates -->
+        <div class="widget-card">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <strong>🎁 Meta de Presentes & Doações</strong>
+            <span class="badge-tag badge-tag-amber">360x220</span>
+          </div>
+          <p style="font-size:12px; color:var(--text-muted);">
+            Barra de progresso para presentes do TikTok, Super Chats do YouTube e apoios, com destaque para o último presente recebido.
+          </p>
+          <div class="widget-url-box">
+            <button class="btn btn-primary btn-sm" onclick="copyWidgetUrl('donates')">Copiar URL OBS</button>
+            <button class="btn btn-secondary btn-sm" onclick="window.open('/widgets/donates', '_blank')">Visualizar</button>
+          </div>
+        </div>
+
+        <!-- Widget 4: Alert Box -->
+        <div class="widget-card">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <strong>📢 Alert Box (Notificações na Tela)</strong>
+            <span class="badge-tag badge-tag-amber">600x250</span>
+          </div>
+          <p style="font-size:12px; color:var(--text-muted);">
+            Exibe alertas visuais na live com animação suave, ícone pulsante e aviso sonoro para cafés, presentes, jackpots e metas batidas.
+          </p>
+          <div class="widget-url-box">
+            <button class="btn btn-primary btn-sm" onclick="copyWidgetUrl('alert')">Copiar URL OBS</button>
+            <button class="btn btn-secondary btn-sm" onclick="testAlertWidget()">Testar Alerta</button>
+            <button class="btn btn-secondary btn-sm" onclick="window.open('/widgets/alert', '_blank')">Visualizar</button>
+          </div>
+        </div>
+
+        <!-- Widget 5: Live Chat Overlay -->
+        <div class="widget-card">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <strong>💬 Chat Overlay Transparente</strong>
+            <span class="badge-tag badge-tag-amber">450x650</span>
+          </div>
+          <p style="font-size:12px; color:var(--text-muted);">
+            Exibe as mensagens dos espectadores na tela com badges de Streamer, Mod, VIP e Sub, desaparecendo suavemente.
+          </p>
+          <div class="widget-url-box">
+            <button class="btn btn-primary btn-sm" onclick="copyWidgetUrl('chat')">Copiar URL OBS</button>
+            <button class="btn btn-secondary btn-sm" onclick="window.open('/widgets/chat', '_blank')">Visualizar</button>
+          </div>
+        </div>
+
+        <!-- Widget 6: Stream Ticker Bar -->
+        <div class="widget-card">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <strong>📊 Letreiro / Ticker Bar</strong>
+            <span class="badge-tag badge-tag-amber">1920x50</span>
+          </div>
+          <p style="font-size:12px; color:var(--text-muted);">
+            Faixa rolante para o topo ou rodapé da tela com cafés servidos, curtidas, top cafezeiro e tempo de transmissão.
+          </p>
+          <div class="widget-url-box">
+            <button class="btn btn-primary btn-sm" onclick="copyWidgetUrl('ticker')">Copiar URL OBS</button>
+            <button class="btn btn-secondary btn-sm" onclick="window.open('/widgets/ticker', '_blank')">Visualizar</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- 7. TAB: GENERAL CONFIG & RULES -->
+    <div class="tab-pane" id="tab-config">
+      
+      <!-- Config Sub-Navigation -->
+      <div class="config-subnav">
+        <button class="config-subnav-btn active" data-sub="sub-geral">🌐 Geral & Rede</button>
+        <button class="config-subnav-btn" data-sub="sub-moeda">☕ Moeda "Cafezinho" & Farm</button>
+        <button class="config-subnav-btn" data-sub="sub-jogos">🎲 Mini-Games & Regras</button>
+        <button class="config-subnav-btn" data-sub="sub-metas">❤️ Metas de Likes & Presentes</button>
+        <button class="config-subnav-btn" data-sub="sub-conexoes">📡 Conexões de Live</button>
+        <button class="config-subnav-btn" data-sub="sub-automod">🛡️ Moderação & Automod</button>
+      </div>
+
+      <!-- 7.1 SUB-PANE: GERAL & REDE -->
+      <div class="config-pane active" id="sub-geral">
+        <div class="card" style="max-width:700px;">
+          <div class="card-title">🌐 Configurações Gerais do Bot</div>
+          <div class="card-desc" style="margin-bottom:16px;">Identidade do bot e parâmetros de rede</div>
+
+          <div class="form-group">
+            <label class="form-label">Nome do Bot no Chat</label>
+            <input type="text" id="cfgBotName" class="form-input" value="Coffee Bot">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Prefixo dos Comandos</label>
+            <input type="text" id="cfgBotPrefix" class="form-input" value="!" style="width:80px;">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Porta do Servidor Local</label>
+            <input type="number" id="cfgPort" class="form-input" value="3334" style="width:120px;" readonly>
+            <span style="font-size:11px; color:#9ca3af; display:block; margin-top:4px;">
+              Configurada como <strong>3334</strong> para não colidir com o PudiGa (3333) e Trono (3000).
+            </span>
+          </div>
+
+          <div class="form-group" style="display:flex; align-items:center; gap:8px;">
+            <input type="checkbox" id="cfgSoundEnabled" checked>
+            <label for="cfgSoundEnabled" style="font-size:13px; cursor:pointer;">Efeitos Sonoros do Sintetizador Habilitados</label>
+          </div>
+
+          <button class="btn btn-primary" onclick="saveAllSettings()">Salvar Configurações Gerais</button>
+        </div>
+      </div>
+
+      <!-- 7.2 SUB-PANE: MOEDA & WATCH-TIME FARM -->
+      <div class="config-pane" id="sub-moeda">
+        <div class="card" style="max-width:700px;">
+          <div class="card-title">☕ Moeda da Live: "Cafezinho" & Farm por Assistir</div>
+          <div class="card-desc" style="margin-bottom:16px;">Configure como os espectadores ganham Cafezinhos assistindo a live</div>
+
+          <div class="form-group">
+            <label class="form-label">Nome da Moeda (Singular / Plural)</label>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+              <input type="text" id="cfgCurrencyName" class="form-input" value="Cafezinho">
+              <input type="text" id="cfgCurrencyPlural" class="form-input" value="Cafezinhos">
+            </div>
+          </div>
+
+          <div class="form-group" style="display:flex; align-items:center; gap:8px;">
+            <input type="checkbox" id="cfgFarmingEnabled" checked>
+            <label for="cfgFarmingEnabled" style="font-size:13px; cursor:pointer;">
+              <strong>Ativar Farming por Tempo Assistido:</strong> espectadores ativos ganham Cafezinhos automaticamente a cada ciclo.
+            </label>
+          </div>
+
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+            <div class="form-group">
+              <label class="form-label">Cafezinhos por Ciclo</label>
+              <input type="number" id="cfgFarmingAmount" class="form-input" value="5" min="1">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Intervalo do Ciclo (Minutos)</label>
+              <input type="number" id="cfgFarmingInterval" class="form-input" value="2" min="1">
+            </div>
+          </div>
+
+          <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:12px;">
+            <div class="form-group">
+              <label class="form-label">Multiplicador Subs (Twitch)</label>
+              <input type="number" step="0.1" id="cfgSubMultiplier" class="form-input" value="1.5" min="1">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Multiplicador Fã Clube (TikTok)</label>
+              <input type="number" step="0.1" id="cfgTikTokFanMultiplier" class="form-input" value="1.5" min="1">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Multiplicador Membros (YouTube)</label>
+              <input type="number" step="0.1" id="cfgYouTubeMemberMultiplier" class="form-input" value="1.5" min="1">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Multiplicador VIPs / Mods</label>
+              <input type="number" step="0.1" id="cfgVipMultiplier" class="form-input" value="1.2" min="1">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Recompensa ao usar !cafe (Cafezinhos concedidos)</label>
+            <input type="number" id="cfgCoffeeReward" class="form-input" value="10" min="0" style="width:120px;">
+          </div>
+
+          <button class="btn btn-primary" onclick="saveAllSettings()">Salvar Regras de Moeda</button>
+        </div>
+      </div>
+
+      <!-- 7.3 SUB-PANE: MINI-GAMES & REGRAS -->
+      <div class="config-pane" id="sub-jogos">
+        <div class="grid-2">
+          
+          <!-- Roleta -->
+          <div class="card">
+            <div class="card-title">🎰 Regras da Roleta (!roleta)</div>
+            <div class="card-desc" style="margin-bottom:14px;">Apostas na torra do café</div>
+
+            <div class="form-group">
+              <label class="form-label">Chance de Vitória (%) [1% a 99%]</label>
+              <input type="number" id="cfgRouletteChance" class="form-input" value="50" min="1" max="99">
+              <span style="font-size:11px; color:#9ca3af;">Padrão: 50% (50/50)</span>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Multiplicador de Ganho (Ex: 2.0x dobra a aposta)</label>
+              <input type="number" step="0.1" id="cfgRouletteMultiplier" class="form-input" value="2.0" min="1">
+            </div>
+
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+              <div class="form-group">
+                <label class="form-label">Aposta Mínima</label>
+                <input type="number" id="cfgRouletteMinBet" class="form-input" value="1" min="1">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Aposta Máxima</label>
+                <input type="number" id="cfgRouletteMaxBet" class="form-input" value="10000" min="1">
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Cooldown do Jogo (Minutos) [Padrão: 5 min]</label>
+              <input type="number" id="cfgRouletteCooldown" class="form-input" value="5" min="1" style="width:120px;">
+            </div>
+          </div>
+
+          <!-- Slots / Caça-Níqueis -->
+          <div class="card">
+            <div class="card-title">💎 Caça-Níqueis da Cafeteria (!slots)</div>
+            <div class="card-desc" style="margin-bottom:14px;">Girar máquina com 🧀, 🐍, ☕, 💎, ❤️</div>
+
+            <div class="form-group">
+              <label class="form-label">Chance Geral de Ganho (%) [1% a 99%]</label>
+              <input type="number" id="cfgSlotsWinChance" class="form-input" value="40" min="1" max="99">
+              <span style="font-size:11px; color:#9ca3af;">Padrão: 40% de chance de combinação</span>
+            </div>
+
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+              <div class="form-group">
+                <label class="form-label">Multiplicador 3 Iguais (Jackpot)</label>
+                <input type="number" step="0.5" id="cfgSlotsJackpot" class="form-input" value="5.0" min="2">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Multiplicador 2 Iguais (Par)</label>
+                <input type="number" step="0.1" id="cfgSlotsPair" class="form-input" value="1.5" min="1">
+              </div>
+            </div>
+
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+              <div class="form-group">
+                <label class="form-label">Aposta Mínima</label>
+                <input type="number" id="cfgSlotsMinBet" class="form-input" value="5" min="1">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Aposta Máxima</label>
+                <input type="number" id="cfgSlotsMaxBet" class="form-input" value="5000" min="1">
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Cooldown do Jogo (Minutos) [Padrão: 5 min]</label>
+              <input type="number" id="cfgSlotsCooldown" class="form-input" value="5" min="1" style="width:120px;">
+            </div>
+          </div>
+
+          <!-- Duelo -->
+          <div class="card" style="grid-column: 1 / -1;">
+            <div class="card-title">⚔️ Duelo entre Viewers (!duelo @user <quantia>)</div>
+            <div class="card-desc" style="margin-bottom:14px;">Confronto direto valendo Cafezinhos entre dois espectadores</div>
+
+            <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:12px;">
+              <div class="form-group">
+                <label class="form-label">Tempo Limite para Aceitar (Segundos)</label>
+                <input type="number" id="cfgDuelTimeout" class="form-input" value="60" min="15">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Aposta Mínima no Duelo</label>
+                <input type="number" id="cfgDuelMinBet" class="form-input" value="5" min="1">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Aposta Máxima no Duelo</label>
+                <input type="number" id="cfgDuelMaxBet" class="form-input" value="20000" min="1">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Cooldown do Jogo (Minutos)</label>
+                <input type="number" id="cfgDuelCooldown" class="form-input" value="5" min="1">
+              </div>
+            </div>
+
+            <button class="btn btn-primary" onclick="saveAllSettings()">Salvar Regras dos Mini-Games</button>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- 7.4 SUB-PANE: METAS DE LIKES & PRESENTES -->
+      <div class="config-pane" id="sub-metas">
+        <div class="card" style="max-width:700px;">
+          <div class="card-title">❤️ Metas de Likes do TikTok & Presentes</div>
+          <div class="card-desc" style="margin-bottom:16px;">Configure marcos para +10k likes e recompensas comunitárias</div>
+
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+            <div class="form-group">
+              <label class="form-label">Meta de Likes Atual</label>
+              <input type="number" id="cfgLikeTarget" class="form-input" value="10000" min="1000">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Passo de Incremento Automático (Likes)</label>
+              <input type="number" id="cfgLikeStep" class="form-input" value="5000" min="1000">
+            </div>
+          </div>
+
+          <div class="form-group" style="display:flex; align-items:center; gap:8px;">
+            <input type="checkbox" id="cfgLikeAutoIncrement" checked>
+            <label for="cfgLikeAutoIncrement" style="font-size:13px; cursor:pointer;">
+              <strong>Auto-incrementar meta de likes:</strong> ao atingir a meta, sobe automaticamente para o próximo marco.
+            </label>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Recompensa ao Bater Meta de Likes (Chuva de Cafezinhos para todos ativos)</label>
+            <input type="number" id="cfgLikeReward" class="form-input" value="25" min="0" style="width:120px;">
+            <span style="font-size:11px; color:#9ca3af; display:block; margin-top:4px;">
+              Cada espectador ativo no chat nos últimos 15 min ganha essa quantia de Cafezinhos!
+            </span>
+          </div>
+
+          <div style="border-top:1px solid var(--border); padding-top:16px; margin-top:16px;">
+            <div class="card-title" style="font-size:16px; margin-bottom:4px;">🎁 Metas de Presentes do TikTok & Apoios</div>
+            <div class="card-desc" style="margin-bottom:14px;">Configure metas de presentes com auto-incremento padrão (+10) e Chuva de Cafezinhos</div>
+
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+              <div class="form-group">
+                <label class="form-label">Título da Meta de Presentes</label>
+                <input type="text" id="cfgDonateTitle" class="form-input" value="Meta de Presentes 🎁">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Meta de Presentes Atual (Quantidade)</label>
+                <input type="number" id="cfgDonateTarget" class="form-input" value="10" min="1">
+              </div>
+            </div>
+
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+              <div class="form-group">
+                <label class="form-label">Passo de Incremento Próx. Meta (+10 Padrão)</label>
+                <input type="number" id="cfgDonateStep" class="form-input" value="10" min="1">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Recompensa ao Bater (Chuva de Cafezinhos)</label>
+                <input type="number" id="cfgDonateReward" class="form-input" value="25" min="0">
+              </div>
+            </div>
+
+            <div class="form-group" style="display:flex; align-items:center; gap:8px;">
+              <input type="checkbox" id="cfgDonateAutoIncrement" checked>
+              <label for="cfgDonateAutoIncrement" style="font-size:13px; cursor:pointer;">
+                <strong>Auto-incrementar meta (+10):</strong> ao bater a meta de presentes, soma automaticamente +10 na próxima meta e distribui Chuva de Cafezinhos para todos ativos!
+              </label>
+            </div>
+          </div>
+
+          <button class="btn btn-primary" onclick="saveAllSettings()">Salvar Metas da Live</button>
+        </div>
+      </div>
+
+      <!-- 7.5 SUB-PANE: CONEXÕES DE LIVE -->
+      <div class="config-pane" id="sub-conexoes">
+        <div class="grid-2">
+          
+          <!-- TikTok Live -->
+          <div class="card">
+            <div class="card-title">⬛ Conexão com o TikTok Live</div>
+            <div class="card-desc" style="margin-bottom:14px;">Captura de chat, likes (+10k) e presentes</div>
+
+            <div class="form-group">
+              <label class="form-label">Usuário da Live no TikTok (@canal)</label>
+              <input type="text" id="cfgTikTokUser" class="form-input" placeholder="ex: @gamescoffeesr" value="@gamescoffeesr">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Chave EulerStream API (Opcional)</label>
+              <input type="password" id="cfgTikTokKey" class="form-input" placeholder="Chave opcional para maior estabilidade">
+            </div>
+
+            <div style="display:flex; gap:10px; margin-bottom:12px;">
+              <button class="btn btn-primary" onclick="connectTikTok()">Conectar TikTok</button>
+              <button class="btn btn-danger" onclick="disconnectTikTok()">Desconectar</button>
+            </div>
+
+            <div style="background:var(--bg-surface-elevated); padding:10px; border-radius:8px; border:1px solid var(--border); font-size:11px; color:#9ca3af;">
+              💡 <strong>Dica TikFinity / Webhook:</strong> você também pode enviar eventos via Webhook para <code style="color:#fbbf24;">http://localhost:3334/api/webhook/tiktok</code>.
+            </div>
+          </div>
+
+          <!-- YouTube Live -->
+          <div class="card">
+            <div class="card-title">🔴 Conexão com o YouTube Live</div>
+            <div class="card-desc" style="margin-bottom:14px;">Captura de chat e Super Chats</div>
+
+            <div class="form-group">
+              <label class="form-label">Link ou ID da Live no YouTube</label>
+              <input type="text" id="cfgYouTubeUrl" class="form-input" placeholder="ex: eQte0FqK0LU ou link completo" value="eQte0FqK0LU">
+            </div>
+
+            <div style="display:flex; gap:10px;">
+              <button class="btn btn-primary" onclick="connectYouTube()">Conectar YouTube</button>
+              <button class="btn btn-danger" onclick="disconnectYouTube()">Desconectar</button>
+            </div>
+          </div>
+
+          <!-- Twitch -->
+          <div class="card" style="grid-column: 1 / -1;">
+            <div class="card-title">🟣 Conexão com a Twitch</div>
+            <div class="card-desc" style="margin-bottom:14px;">Conecte com sua conta para enviar e responder mensagens</div>
+
+            <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap:12px;">
+              <div class="form-group">
+                <label class="form-label">Canal da Twitch (Streamer)</label>
+                <input type="text" id="cfgTwitchChannel" class="form-input" placeholder="ex: seucanal">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Nome da Conta do Bot (Opcional)</label>
+                <input type="text" id="cfgTwitchBotUser" class="form-input" placeholder="ex: CoffeeBot">
+              </div>
+              <div class="form-group">
+                <label class="form-label">OAuth Token do Bot (Opcional)</label>
+                <input type="password" id="cfgTwitchToken" class="form-input" placeholder="oauth:xxxxxxxxxxxx">
+              </div>
+            </div>
+
+            <div style="display:flex; gap:10px;">
+              <button class="btn btn-primary" onclick="connectTwitch()">Conectar Twitch</button>
+              <button class="btn btn-danger" onclick="disconnectTwitch()">Desconectar</button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- 7.6 SUB-PANE: AUTOMOD -->
+      <div class="config-pane" id="sub-automod">
+        <div class="card" style="max-width:700px;">
+          <div class="card-title">🛡️ Filtros de Moderação & Automod</div>
+          <div class="card-desc" style="margin-bottom:16px;">Proteja seu chat contra abusos de caixa alta e links</div>
+
+          <div class="form-group" style="display:flex; align-items:center; gap:8px;">
+            <input type="checkbox" id="cfgModCaps" checked>
+            <label for="cfgModCaps" style="font-size:13px; cursor:pointer;">
+              <strong>Filtro de Caps Lock:</strong> Avisar quem mandar mensagens com excesso de maiúsculas.
+            </label>
+          </div>
+
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+            <div class="form-group">
+              <label class="form-label">Limite Percentual de CAPS (%)</label>
+              <input type="number" id="cfgCapsThreshold" class="form-input" value="70" min="50" max="100">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Comprimento Mínimo da Mensagem</label>
+              <input type="number" id="cfgCapsMinLength" class="form-input" value="10" min="5">
+            </div>
+          </div>
+
+          <div class="form-group" style="display:flex; align-items:center; gap:8px; margin-top:8px;">
+            <input type="checkbox" id="cfgModLinks">
+            <label for="cfgModLinks" style="font-size:13px; cursor:pointer;">
+              <strong>Bloqueio de Links:</strong> Bloquear envio de links por espectadores comuns.
+            </label>
+          </div>
+
+          <button class="btn btn-primary" onclick="saveAllSettings()">Salvar Moderação</button>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- 8. TAB: CLIPS & TIMESTAMPS MARKER -->
+    <div class="tab-pane" id="tab-clipes">
+      <!-- Hero Action Card -->
+      <div class="card clip-hero-card" style="margin-bottom:20px;">
+        <div class="clip-hero-header">
+          <div>
+            <h2 style="font-size:22px; font-weight:800; display:flex; align-items:center; gap:10px;">
+              <span>🎬 Marcador de Clipes & Cortes</span>
+              <span class="badge" style="background:rgba(217,119,6,0.2); color:#fbbf24; border:1px solid #d97706; font-size:11px; padding:3px 8px;">AO VIVO</span>
+            </h2>
+            <p style="color:var(--text-muted); font-size:13px; margin-top:4px;">
+              Marque momentos épicos, jogadas, piadas ou destaques durante a live para corte rápido de vídeos e YouTube Chapters.
+            </p>
+          </div>
+          <div class="clip-clock-box">
+            <div class="clip-live-time-label">TEMPO DE TRANSMISSÃO</div>
+            <div class="clip-live-time-val" id="clipLiveTimer">00:00:00</div>
+            <div class="clip-real-time-val" id="clipRealClock">Relógio: 00:00:00</div>
+          </div>
+        </div>
+
+        <!-- Big Trigger Button -->
+        <div class="clip-trigger-container">
+          <button class="clip-action-big-btn" id="btnTriggerClip" onclick="markClipNow()">
+            <span class="clip-btn-icon">🎯</span>
+            <span class="clip-btn-text">
+              <span class="clip-btn-primary">MARCAR CLIPE AGORA!</span>
+              <span class="clip-btn-sub">Pressione a tecla <kbd id="displayHotkey" class="kbd-key">C</kbd> no teclado a qualquer momento</span>
+            </span>
+          </button>
+        </div>
+
+        <!-- Quick customization of hotkey & actions -->
+        <div class="clip-form-bar">
+          <div style="display:flex; align-items:center; gap:8px;">
+            <label style="font-size:12px; color:var(--text-muted); font-weight:600;">Atalho Teclado:</label>
+            <select id="clipHotkeySelect" class="form-input" style="width:140px; padding:4px 8px; font-size:12px;" onchange="changeClipHotkey(this.value)">
+              <option value="c" selected>Tecla C (Padrão)</option>
+              <option value="k">Tecla K</option>
+              <option value="m">Tecla M</option>
+              <option value=" ">Barra de Espaço</option>
+              <option value="f8">Tecla F8</option>
+            </select>
+            <span style="font-size:11px; color:var(--text-dim);">(Funciona em qualquer aba quando não estiver digitando)</span>
+          </div>
+
+          <div style="margin-left:auto; display:flex; gap:10px;">
+            <button class="btn btn-secondary" style="font-size:12px; padding:6px 12px;" onclick="copyAllClips()">📋 Copiar Todos</button>
+            <button class="btn btn-secondary" style="font-size:12px; padding:6px 12px;" onclick="exportClipsYouTube()">📥 Exportar Chapters (TXT)</button>
+            <button class="btn btn-secondary" style="font-size:12px; padding:6px 12px;" onclick="exportClipsCSV()">📥 Exportar CSV</button>
+            <button class="btn btn-danger" style="font-size:12px; padding:6px 12px;" onclick="clearAllClips()">🗑️ Limpar Clipes</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Note for Recent Marker -->
+      <div class="card" id="clipRecentBox" style="margin-bottom:20px; display:none; border:1px solid #d97706; background:rgba(217,119,6,0.08);">
+        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:8px;">
+          <span style="font-weight:700; color:#fbbf24; font-size:14px;">⚡ Último Clipe Marcado aos <span id="recentClipTs">00:00:00</span></span>
+          <button class="btn btn-sm" onclick="hideRecentClipBox()" style="background:transparent; color:var(--text-dim); padding:2px 6px;">✕</button>
+        </div>
+        <div style="display:grid; grid-template-columns:1fr 200px auto; gap:10px; align-items:center;">
+          <input type="text" id="recentClipTitle" class="form-input" placeholder="Dê um nome para esse clipe (Ex: Clutch épico 1v3)..." onkeydown="if(event.key==='Enter') saveRecentClipNote()">
+          <select id="recentClipCat" class="form-input">
+            <option value="epic">🎮 Jogada Épica</option>
+            <option value="funny">😂 Engraçado / Meme</option>
+            <option value="goal">🏆 Meta Batida</option>
+            <option value="gift">🎁 Presente Top</option>
+            <option value="fail">💥 Fail / Susto</option>
+            <option value="chat">💬 Momento Chat</option>
+            <option value="other">⭐ Geral</option>
+          </select>
+          <button class="btn btn-primary" onclick="saveRecentClipNote()">💾 Salvar Nota</button>
+        </div>
+      </div>
+
+      <!-- Clips List -->
+      <div class="card">
+        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:14px;">
+          <div class="card-title" style="margin:0;">📋 Lista de Clipes & Marcações da Live (<span id="clipsCountLabel">0</span>)</div>
+          <div style="font-size:12px; color:var(--text-muted);">Clique para copiar o timestamp direto para seu editor de vídeo</div>
+        </div>
+
+        <div id="clipsEmptyState" style="text-align:center; padding:40px 20px; color:var(--text-dim);">
+          <div style="font-size:42px; margin-bottom:10px;">🎬</div>
+          <div style="font-size:15px; font-weight:600; color:var(--text-muted);">Nenhum clipe marcado nesta sessão ainda</div>
+          <div style="font-size:13px; margin-top:4px;">Pressione a tecla <strong>C</strong> no teclado durante a transmissão para criar um marcador instantâneo.</div>
+        </div>
+
+        <div class="clips-list-grid" id="clipsListContainer">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+    </div>
+
+    <!-- 9. TAB: HISTORY & AUDIT -->
+    <div class="tab-pane" id="tab-historico">
+      <!-- Sub-tabs navigation for History -->
+      <div class="history-subnav" style="display:flex; gap:10px; margin-bottom:20px; border-bottom:1px solid var(--border); padding-bottom:12px;">
+        <button class="btn btn-secondary history-subnav-btn active" data-sub="hist-lives" onclick="switchHistorySubTab('hist-lives')">📺 Histórico de Lives Realizadas</button>
+        <button class="btn btn-secondary history-subnav-btn" data-sub="hist-audit" onclick="switchHistorySubTab('hist-audit')">📝 Log de Alterações & Auditoria</button>
+        <button class="btn btn-secondary history-subnav-btn" data-sub="hist-rewards" onclick="switchHistorySubTab('hist-rewards')">🎁 Histórico de Premiações</button>
+        <button class="btn btn-secondary history-subnav-btn" data-sub="hist-snapshot" onclick="switchHistorySubTab('hist-snapshot')">⚙️ Snapshot das Configurações</button>
+      </div>
+
+      <!-- Sub-pane 1: Live Sessions History -->
+      <div class="history-subpane active" id="sub-hist-lives">
+        <div class="card" style="margin-bottom:20px;">
+          <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px;">
+            <div>
+              <div class="card-title" style="margin:0;">📺 Transmissões Realizadas & Estatísticas</div>
+              <div class="card-desc">Histórico completo de cada live com métricas, pico de espectadores, presentes e apoiadores.</div>
+            </div>
+            <div style="display:flex; gap:10px;">
+              <button class="btn btn-primary" onclick="openArchiveLiveModal()" style="display:flex; align-items:center; gap:6px;">
+                <span>💾</span> <span>Encerrar & Salvar Live Atual</span>
+              </button>
+              <button class="btn btn-secondary" onclick="loadLiveSessions()">🔄 Atualizar</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Table / Rows of live sessions -->
+        <div id="liveSessionsContainer">
+          <!-- Populated dynamically with expandable rows -->
+        </div>
+      </div>
+
+      <!-- Sub-pane 2: Audit Logs -->
+      <div class="history-subpane" id="sub-hist-audit" style="display:none;">
+        <div class="card" style="margin-bottom:20px;">
+          <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px;">
+            <div>
+              <div class="card-title" style="margin:0;">📝 Registro de Alterações de Configurações</div>
+              <div class="card-desc">Rastreamento de todas as alterações feitas em moedas, multiplicadores, timers, comandos e metas.</div>
+            </div>
+            <div style="display:flex; align-items:center; gap:10px;">
+              <select id="auditFilterCat" class="form-input" style="width:160px;" onchange="loadAuditLogs(this.value)">
+                <option value="all">Todas as Categorias</option>
+                <option value="config">Configurações</option>
+                <option value="command">Comandos</option>
+                <option value="timer">Timers</option>
+                <option value="reward">Premiações</option>
+              </select>
+              <button class="btn btn-danger" style="font-size:12px; padding:6px 12px;" onclick="clearAuditLogs()">🧹 Limpar Logs</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="table-responsive">
+            <table class="styled-table" style="width:100%;">
+              <thead>
+                <tr>
+                  <th style="width:150px;">DATA & HORA</th>
+                  <th style="width:130px;">CATEGORIA</th>
+                  <th style="width:220px;">AÇÃO REALIZADA</th>
+                  <th>DETALHES DA MODIFICAÇÃO</th>
+                  <th style="width:130px;">AUTOR</th>
+                </tr>
+              </thead>
+              <tbody id="auditTableBody">
+                <!-- Populated dynamically -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sub-pane 3: Rewards History -->
+      <div class="history-subpane" id="sub-hist-rewards" style="display:none;">
+        <div class="card">
+          <div class="card-title">🎁 Histórico de Premiações & Chuvas de Cafezinhos</div>
+          <div class="card-desc" style="margin-bottom:16px;">Registro de todos os prêmios distribuídos aos espectadores por metas batidas ou ações do streamer.</div>
+
+          <div class="table-responsive">
+            <table class="styled-table" style="width:100%;">
+              <thead>
+                <tr>
+                  <th style="width:150px;">HORÁRIO</th>
+                  <th style="width:240px;">TIPO DE PREMIAÇÃO</th>
+                  <th>DETALHES DA DISTRIBUIÇÃO</th>
+                  <th style="width:150px;">ORIGEM</th>
+                </tr>
+              </thead>
+              <tbody id="rewardsTableBody">
+                <!-- Populated dynamically -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sub-pane 4: Settings Snapshot -->
+      <div class="history-subpane" id="sub-hist-snapshot" style="display:none;">
+        <div class="card">
+          <div class="card-title">⚙️ Snapshot das Configurações Ativas</div>
+          <div class="card-desc" style="margin-bottom:16px;">Parâmetros operacionais do bot em execução no momento.</div>
+
+          <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(280px, 1fr)); gap:16px;" id="snapshotGrid">
+            <!-- Populated dynamically -->
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Modal: Arquivar Live Atual -->
+  <div class="modal-overlay" id="archiveLiveModal" style="display:none;">
+    <div class="modal-card" style="max-width:500px;">
+      <div class="modal-header">
+        <h3>💾 Salvar Live Atual no Histórico</h3>
+        <button class="modal-close-btn" onclick="closeArchiveLiveModal()">✕</button>
+      </div>
+      <div class="modal-body">
+        <p style="font-size:13px; color:var(--text-muted); margin-bottom:14px;">
+          Isso salvará todas as métricas atuais (Likes, Presentes, Viewers, Cafés e Clipes) em uma linha permanente no histórico.
+        </p>
+        <div class="form-group">
+          <label class="form-label">Título da Live</label>
+          <input type="text" id="archiveLiveTitle" class="form-input" placeholder="Ex: Live de Sexta - Gameplay e Café">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Anotações / Destaques da Transmissão</label>
+          <textarea id="archiveLiveNotes" class="form-input" rows="3" placeholder="O que rolou de bom na live hoje?"></textarea>
+        </div>
+        <div class="form-group" style="display:flex; align-items:center; gap:8px;">
+          <input type="checkbox" id="archiveResetSession" checked>
+          <label for="archiveResetSession" style="font-size:12px; cursor:pointer;">
+            Zerar estatísticas ao vivo para iniciar uma nova transmissão limpa.
+          </label>
+        </div>
+      </div>
+      <div class="modal-footer" style="display:flex; justify-content:flex-end; gap:10px;">
+        <button class="btn btn-secondary" onclick="closeArchiveLiveModal()">Cancelar</button>
+        <button class="btn btn-primary" onclick="confirmArchiveLive()">Salvar no Histórico</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="/js/audio-synth.js"></script>
+  <script src="/js/dashboard.js"></script>
+</body>
+</html>

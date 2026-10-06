@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Coffee Bot - Chat Overlay (OBS)</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      background: transparent;
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      overflow: hidden;
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding: 20px;
+    }
+
+    #chatContainer {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      max-height: 90vh;
+      overflow: hidden;
+      width: 100%;
+      max-width: 450px;
+    }
+
+    .chat-bubble {
+      display: flex;
+      flex-direction: column;
+      background: rgba(18, 14, 12, 0.85);
+      border-left: 4px solid #f59e0b;
+      border-radius: 4px 12px 12px 4px;
+      padding: 8px 14px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(8px);
+      animation: slideIn 0.35s ease-out;
+      word-break: break-word;
+      transition: opacity 0.5s ease;
+    }
+
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .chat-header {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 3px;
+    }
+
+    .badge {
+      font-size: 11px;
+      font-weight: 700;
+      padding: 1px 6px;
+      border-radius: 4px;
+      text-transform: uppercase;
+    }
+    .badge-broadcaster { background: #dc2626; color: #fff; }
+    .badge-mod { background: #16a34a; color: #fff; }
+    .badge-vip { background: #ec4899; color: #fff; }
+    .badge-sub { background: #8b5cf6; color: #fff; }
+    .badge-bot { background: #d97706; color: #fff; }
+    .badge-youtube { background: #ef4444; color: #fff; }
+    .badge-tiktok { background: #111827; color: #22d3ee; border: 1px solid #f43f5e; }
+    .badge-twitch { background: #9333ea; color: #fff; }
+    .badge-kick { background: #16a34a; color: #fff; }
+
+    .username {
+      font-weight: 700;
+      font-size: 14px;
+      color: #fbbf24;
+    }
+
+    .message-text {
+      font-size: 15px;
+      color: #f3f4f6;
+      line-height: 1.35;
+    }
+
+    .chat-bubble.bot-message {
+      border-left-color: #fbbf24;
+      background: rgba(36, 26, 18, 0.92);
+      border: 1px solid rgba(245, 158, 11, 0.4);
+    }
+  </style>
+</head>
+<body>
+  <div id="chatContainer"></div>
+
+  <script>
+    const container = document.getElementById('chatContainer');
+    const MAX_MESSAGES = 12;
+
+    function addMessage(data) {
+      const bubble = document.createElement('div');
+      bubble.className = 'chat-bubble' + (data.isBot ? ' bot-message' : '');
+
+      let badgesHtml = '';
+      if (data.platform === 'youtube') badgesHtml += '<span class="badge badge-youtube">▶️ YOUTUBE</span>';
+      else if (data.platform === 'tiktok') badgesHtml += '<span class="badge badge-tiktok">🎵 TIKTOK</span>';
+      else if (data.platform === 'twitch') badgesHtml += '<span class="badge badge-twitch">👾 TWITCH</span>';
+      else if (data.platform === 'kick') badgesHtml += '<span class="badge badge-kick">🟩 KICK</span>';
+
+      if (data.isBot) badgesHtml += '<span class="badge badge-bot">☕ BOT</span>';
+      if (data.isBroadcaster) badgesHtml += '<span class="badge badge-broadcaster">👑 STREAMER</span>';
+      if (data.isMod) badgesHtml += '<span class="badge badge-mod">⚔️ MOD</span>';
+      if (data.isVip) badgesHtml += '<span class="badge badge-vip">💎 VIP</span>';
+      if (data.isSub) badgesHtml += '<span class="badge badge-sub">⭐ SUB</span>';
+
+      bubble.innerHTML = `
+        <div class="chat-header">
+          ${badgesHtml}
+          <span class="username">${escapeHtml(data.user)}</span>
+        </div>
+        <div class="message-text">${escapeHtml(data.message)}</div>
+      `;
+
+      container.appendChild(bubble);
+
+      // Keep max messages
+      while (container.children.length > MAX_MESSAGES) {
+        container.removeChild(container.firstChild);
+      }
+
+      // Auto fade out after 20s
+      setTimeout(() => {
+        bubble.style.opacity = '0';
+        setTimeout(() => {
+          if (bubble.parentElement) bubble.parentElement.removeChild(bubble);
+        }, 500);
+      }, 20000);
+    }
+
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    // Connect to WebSocket
+    function connectWS() {
+      const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+      const wsUrl = `${protocol}//${window.location.host}/ws`;
+      const ws = new WebSocket(wsUrl);
+
+      ws.onmessage = (event) => {
+        try {
+          const payload = JSON.parse(event.data);
+          if (payload.type === 'chat_message' || payload.type === 'bot_message') {
+            addMessage(payload.data);
+          }
+        } catch (e) {
+          console.error(e);
+        }
+      };
+
+      ws.onclose = () => {
+        setTimeout(connectWS, 3000);
+      };
+    }
+
+    connectWS();
+  </script>
+</body>
+</html>

@@ -1,0 +1,26 @@
+[
+  {
+    "id": "timer-hydrate",
+    "name": "Lembrete do Café e Hidratação",
+    "message": "☕💧 Pausa para um gole d'água ou café! Mantenha-se hidratado enquanto aproveita a live com a gente!",
+    "intervalMinutes": 15,
+    "chatLinesThreshold": 3,
+    "enabled": true
+  },
+  {
+    "id": "timer-discord",
+    "name": "Divulgação do Discord",
+    "message": "💬 Quer trocar uma ideia fora da live e participar dos eventos? Entre no nosso servidor do Discord: https://discord.gg/seuservidor",
+    "intervalMinutes": 25,
+    "chatLinesThreshold": 5,
+    "enabled": true
+  },
+  {
+    "id": "timer-sub-follow",
+    "name": "Lembrete de Follow / Sub",
+    "message": "⭐ Gostando da live? Deixe seu follow e ative o sininho para não perder as próximas streams! Se tiver Amazon Prime, você pode dar sub de graça!",
+    "intervalMinutes": 35,
+    "chatLinesThreshold": 5,
+    "enabled": true
+  }
+]

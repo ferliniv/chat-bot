@@ -1,0 +1,24 @@
+{
+  "name": "chat-bot",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "@tiktool/live": "^2.12.3",
+    "cors": "^2.8.6",
+    "express": "^5.2.1",
+    "puppeteer-core": "^25.12.0",
+    "tiktok-live-connector": "^2.5.0",
+    "tmi.js": "^1.8.5",
+    "ws": "^8.22.0",
+    "youtube-chat": "^2.2.0"
+  }
+}
