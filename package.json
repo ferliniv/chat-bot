@@ -14,7 +14,9 @@
   "dependencies": {
     "@tiktool/live": "^2.12.3",
     "cors": "^2.8.6",
+    "dotenv": "^18.0.5",
     "express": "^5.2.1",
+    "pg": "^8.23.1",
     "puppeteer-core": "^25.12.0",
     "tiktok-live-connector": "^2.5.0",
     "tmi.js": "^1.8.5",

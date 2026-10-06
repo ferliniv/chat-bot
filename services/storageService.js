@@ -1,5 +1,6 @@
 const fs = require('fs');
 const path = require('path');
+const neonService = require('./neonService');
 
 const DATA_DIR = path.join(__dirname, '..', 'data');
 
@@ -295,6 +296,7 @@ class StorageService {
 
   saveSettings() {
     fs.writeFileSync(this.settingsFile, JSON.stringify(this.settings, null, 2), 'utf8');
+    try { neonService.saveSettings('active_settings', this.settings).catch(() => {}); } catch (_) {}
   }
 
   savePoints() {
@@ -329,6 +331,7 @@ class StorageService {
     this.points[key] = (this.points[key] || 0) + amount;
     if (this.points[key] < 0) this.points[key] = 0;
     this.savePoints();
+    try { neonService.savePoints(key, this.points[key]).catch(() => {}); } catch (_) {}
     return this.points[key];
   }
 
@@ -541,15 +544,17 @@ class StorageService {
 
   logEvent(event) {
     if (!this.stats.recentEvents) this.stats.recentEvents = [];
-    this.stats.recentEvents.unshift({
+    const item = {
       id: `evt-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
       timestamp: Date.now(),
       ...event
-    });
+    };
+    this.stats.recentEvents.unshift(item);
     if (this.stats.recentEvents.length > 60) {
       this.stats.recentEvents.length = 60;
     }
     this.saveStats();
+    try { neonService.saveEvent(item).catch(() => {}); } catch (_) {}
   }
 
   addHistorySnapshot() {
@@ -614,6 +619,7 @@ class StorageService {
     this.auditLog.unshift(entry);
     if (this.auditLog.length > 200) this.auditLog.length = 200;
     this.saveAuditLog();
+    try { neonService.saveAuditLog(entry).catch(() => {}); } catch (_) {}
     return entry;
   }
 
@@ -629,6 +635,7 @@ class StorageService {
   clearAuditLogs() {
     this.auditLog = [];
     this.saveAuditLog();
+    try { neonService.clearAuditLogs().catch(() => {}); } catch (_) {}
     return true;
   }
 
@@ -681,6 +688,7 @@ class StorageService {
 
     this.liveSessions.unshift(session);
     this.saveLiveSessions();
+    try { neonService.saveLiveSession(session).catch(() => {}); } catch (_) {}
 
     this.logAudit({
       category: 'config',
@@ -698,6 +706,7 @@ class StorageService {
     if (idx >= 0) {
       const removed = this.liveSessions.splice(idx, 1)[0];
       this.saveLiveSessions();
+      try { neonService.deleteLiveSession(id).catch(() => {}); } catch (_) {}
       this.logAudit({
         category: 'config',
         action: 'Sessão de Live Excluída',
@@ -743,6 +752,7 @@ class StorageService {
 
     this.clips.unshift(clip);
     this.saveClips();
+    try { neonService.saveClip(clip).catch(() => {}); } catch (_) {}
     return clip;
   }
 
@@ -754,6 +764,7 @@ class StorageService {
     if (updates.category !== undefined) clip.category = updates.category;
     if (updates.notes !== undefined) clip.notes = updates.notes;
     this.saveClips();
+    try { neonService.updateClip(id, updates).catch(() => {}); } catch (_) {}
     return clip;
   }
 
@@ -763,6 +774,7 @@ class StorageService {
     if (idx >= 0) {
       this.clips.splice(idx, 1);
       this.saveClips();
+      try { neonService.deleteClip(id).catch(() => {}); } catch (_) {}
       return true;
     }
     return false;
@@ -771,6 +783,7 @@ class StorageService {
   clearClips() {
     this.clips = [];
     this.saveClips();
+    try { neonService.clearClips().catch(() => {}); } catch (_) {}
     return true;
   }
 }

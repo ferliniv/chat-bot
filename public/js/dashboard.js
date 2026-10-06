@@ -202,6 +202,7 @@ function applyInitialState(data) {
   updateTwitchIndicator(data.twitchConnected, data.twitchStatus);
   updateYouTubeIndicator(data.youtubeConnected, data.youtubeStatus);
   updateTikTokIndicator(data.tiktokConnected, data.tiktokStatus);
+  if (data.neonConnected !== undefined) updateNeonIndicator(data.neonConnected, data.neonStatus);
 }
 
 // Status & Stats Loader
@@ -237,6 +238,14 @@ function loadStatus() {
       updateTwitchIndicator(data.twitch.connected, data.twitch.status);
       if (data.youtube) updateYouTubeIndicator(data.youtube.connected, data.youtube.status, data.youtube.liveId);
       if (data.tiktok) updateTikTokIndicator(data.tiktok.connected, data.tiktok.status, data.tiktok.username);
+
+      // Check Neon DB Status
+      fetch('/api/neon/status')
+        .then(r => r.json())
+        .then(neon => {
+          updateNeonIndicator(neon.connected, neon.status);
+        })
+        .catch(() => updateNeonIndicator(false));
       
       renderLeaderboard(data.topPoints || []);
       
@@ -557,6 +566,21 @@ function updateTikTokIndicator(connected, status, username) {
   } else {
     ind.className = 'status-indicator offline';
     text.textContent = '🎵 TikTok: Desconectado';
+    text.style.color = '#9ca3af';
+  }
+}
+
+function updateNeonIndicator(connected, status) {
+  const ind = document.getElementById('neonIndicator');
+  const text = document.getElementById('neonStatusText');
+  if (!ind || !text) return;
+  if (connected) {
+    ind.className = 'status-indicator';
+    text.textContent = '🐘 Neon DB: Conectado';
+    text.style.color = '#34d399';
+  } else {
+    ind.className = 'status-indicator offline';
+    text.textContent = '🐘 Neon DB: Desconectado';
     text.style.color = '#9ca3af';
   }
 }
@@ -2282,3 +2306,24 @@ function renderSnapshotConfig(cfg) {
     </div>
   `;
 }
+
+function syncWithNeon() {
+  showToast('Sincronizando todos os dados com o Neon PostgreSQL...');
+  fetch('/api/neon/sync', { method: 'POST' })
+    .then(r => r.json())
+    .then(res => {
+      showToast('✓ Banco de dados Neon sincronizado com sucesso!');
+      loadLiveSessions();
+      fetch('/api/neon/status')
+        .then(r => r.json())
+        .then(neon => {
+          updateNeonIndicator(neon.connected, neon.status);
+          const summ = document.getElementById('neonStatusSummary');
+          if (summ && neon.stats) {
+            summ.textContent = `Sincronizado! ${neon.stats.sessionsCount} lives, ${neon.stats.clipsCount} clipes e ${neon.stats.pointsCount} espectadores no Neon.`;
+          }
+        });
+    })
+    .catch(() => showToast('Falha ao sincronizar com Neon.'));
+}
+

@@ -12,6 +12,7 @@ const botEngine = require('./services/botEngine');
 const twitchService = require('./services/twitchService');
 const youtubeService = require('./services/youtubeService');
 const tiktokService = require('./services/tiktokService');
+const neonService = require('./services/neonService');
 
 const app = express();
 const server = http.createServer(app);
@@ -103,7 +104,9 @@ wss.on('connection', (ws) => {
       youtubeConnected: youtubeService.isConnected,
       youtubeStatus: youtubeService.statusMessage,
       tiktokConnected: tiktokService.isConnected,
-      tiktokStatus: tiktokService.statusMessage
+      tiktokStatus: tiktokService.statusMessage,
+      neonConnected: neonService.isConnected,
+      neonStatus: neonService.getStatus()
     }
   }));
 
@@ -610,6 +613,21 @@ app.delete('/api/clips', (req, res) => {
   res.json({ success: true, message: 'Todos os clipes foram removidos.' });
 });
 
+// 15. Neon PostgreSQL Live Database
+app.get('/api/neon/status', (req, res) => {
+  res.json(neonService.getStatus());
+});
+
+app.post('/api/neon/sync', async (req, res) => {
+  try {
+    await neonService.syncInitialData(null, storage);
+    await neonService.refreshCounts();
+    res.json({ success: true, status: neonService.getStatus() });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // Dedicated Port 3334 to avoid conflict with PudiGa (3333) and Trono (3000)
 const PORT = process.env.PORT || storage.settings.port || 3334;
 server.listen(PORT, async () => {
@@ -623,6 +641,10 @@ server.listen(PORT, async () => {
   console.log(` OBS Widget Chat:      http://localhost:${PORT}/widgets/chat`);
   console.log(` OBS Widget Ticker:    http://localhost:${PORT}/widgets/ticker`);
   console.log(`===============================================`);
+
+  // Initialize Neon PostgreSQL Cloud Database
+  console.log(`[Neon DB] Conectando ao Neon PostgreSQL...`);
+  await neonService.init(storage);
 
   // Auto-connect to YouTube if liveId is saved
   const defaultYt = (storage.settings.youtube && storage.settings.youtube.liveId) || '';
